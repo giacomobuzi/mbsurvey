@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   build:
@@ -14,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -27,7 +28,17 @@ jobs:
           VERSION_NAME: 1.0.${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee build.log
+
+      - name: Report build errors
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo '```'; grep -nE "^(e: |w: .*error|FAILURE|\* What went wrong|> |Execution failed|Caused by|  [^ ]+\.(kt|xml|kts):[0-9]+|error:|Could not|BUILD FAILED)" build.log | head -300 | cut -c1-500; echo '```'; } > errors.md
+          cat errors.md >> "$GITHUB_STEP_SUMMARY"
+          gh issue create --title "Build failed: run ${{ github.run_number }}" --body-file errors.md || true
 
       - name: Rename APK
         run: cp app/build/outputs/apk/release/app-release.apk WiFiSurvey-1.0.${{ github.run_number }}.apk
