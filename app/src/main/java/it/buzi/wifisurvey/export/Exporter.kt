@@ -81,7 +81,7 @@ class Exporter(private val ctx: Context, private val store: ProjectStore) {
 
     // ---------------- backup ----------------
 
-    /** project.json + surveys/*.json + floors/*.jpg, restorable with JsonImporter. */
+    /** project.json, the survey JSON files and the floor JPEGs, restorable with JsonImporter. */
     private fun writeBackupZip(p: Project, file: File) {
         ZipOutputStream(FileOutputStream(file).buffered()).use { zip ->
             zip.putNextEntry(ZipEntry("project.json"))

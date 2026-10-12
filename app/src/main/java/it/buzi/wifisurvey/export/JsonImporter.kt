@@ -10,7 +10,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipInputStream
 
-/** Restores a project from the app's own backup (.wifisurvey.zip: project.json, surveys/*.json, floors/*.jpg). */
+/** Restores a project from the app's own backup zip (project.json, survey JSON files, floor JPEGs). */
 object JsonImporter {
 
     fun import(ctx: Context, store: ProjectStore, uri: Uri): Project {
