@@ -170,6 +170,7 @@ class ScanEntry(
 ) {
     val channel: Int get() = Channels.channelOf(freqMhz)
     val band: Band get() = Channels.bandOf(freqMhz)
+    val security: String get() = Channels.security(capabilities)
 
     fun toJson(): JSONObject = JSONObject()
         .put("b", bssid).put("s", ssid).put("r", rssi).put("f", freqMhz)
