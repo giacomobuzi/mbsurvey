@@ -21,7 +21,7 @@ class WizardActivity : AppCompatActivity() {
     private lateinit var b: ActivityWizardBinding
     private lateinit var store: ProjectStore
     private lateinit var project: Project
-    private val exportUi = ExportUi(this, ProjectStore(this))
+    private val exportUi = ExportUi(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

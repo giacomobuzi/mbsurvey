@@ -17,7 +17,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /** Export menu + share/save flow, shared by the project screen and the wizard. Create it as an Activity field. */
-class ExportUi(private val activity: AppCompatActivity, private val store: ProjectStore) {
+class ExportUi(private val activity: AppCompatActivity) {
+
+    private val store: ProjectStore by lazy { ProjectStore(activity) }
 
     private var pendingFile: File? = null
 

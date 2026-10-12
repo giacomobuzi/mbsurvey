@@ -49,7 +49,7 @@ class ProjectActivity : AppCompatActivity() {
     private lateinit var apsAdapter: TwoLineAdapter<AccessPoint>
     private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY)
 
-    private val exportUi = ExportUi(this, ProjectStore(this))
+    private val exportUi = ExportUi(this)
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { addFloorFrom(it, false) }
