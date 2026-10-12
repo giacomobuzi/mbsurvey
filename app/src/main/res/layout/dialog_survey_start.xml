@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <EditText android:id="@+id/name" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/survey_name_hint" android:inputType="textCapSentences" />
+    <RadioGroup android:id="@+id/modeGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingTop="8dp">
+        <RadioButton android:id="@+id/modeContinuous" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:text="@string/survey_continuous" />
+        <RadioButton android:id="@+id/modeStopGo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/survey_stop_and_go" />
+    </RadioGroup>
+</LinearLayout>

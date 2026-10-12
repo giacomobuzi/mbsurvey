@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="@string/settings_title"
+        app:titleTextColor="#FFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView style="@style/SettingLabel" android:text="@string/s_interval" />
+            <EditText android:id="@+id/interval" style="@style/SettingInput" android:inputType="number" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_stopgo" />
+            <EditText android:id="@+id/stopgo" style="@style/SettingInput" android:inputType="number" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_radius" />
+            <EditText android:id="@+id/radius" style="@style/SettingInput" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_good" />
+            <EditText android:id="@+id/good" style="@style/SettingInput" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_ok" />
+            <EditText android:id="@+id/okThreshold" style="@style/SettingInput" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_min" />
+            <EditText android:id="@+id/min" style="@style/SettingInput" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_apcount" />
+            <EditText android:id="@+id/apcount" style="@style/SettingInput" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_noise" />
+            <EditText android:id="@+id/noise" style="@style/SettingInput" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:text="@string/s_note"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/save" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

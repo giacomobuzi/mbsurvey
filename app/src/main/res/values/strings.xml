@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WiFi Survey</string>
+    <string name="notif_channel">Scansione Wi-Fi</string>
+    <string name="notif_scanning">Scansione Wi-Fi in corso</string>
+    <string name="notif_last_scan">Ultima scansione: %1$d reti</string>
+    <string name="stop">Stop</string>
+    <string name="cancel">Annulla</string>
+    <string name="ok">OK</string>
+    <string name="save">Salva</string>
+    <string name="share">Condividi</string>
+    <string name="delete">Elimina</string>
+    <string name="rename">Rinomina</string>
+    <string name="name">Nome</string>
+
+    <!-- Projects -->
+    <string name="projects_title">Progetti</string>
+    <string name="projects_empty">Nessun progetto. Crea un progetto o importa un file .esx di Ekahau.</string>
+    <string name="new_project">Nuovo progetto</string>
+    <string name="import_esx">Importa .esx (Ekahau)</string>
+    <string name="import_json">Importa backup progetto (.zip)</string>
+    <string name="project_name_hint">Nome progetto</string>
+    <string name="customer_hint">Cliente</string>
+    <string name="location_hint">Sede</string>
+    <string name="surveyor_hint">Rilevatore</string>
+    <string name="delete_project_confirm">Eliminare il progetto \"%1$s\" con tutte le survey?</string>
+    <string name="project_summary">%1$d piani · %2$d survey · %3$d AP</string>
+
+    <!-- Project -->
+    <string name="floors">Piani</string>
+    <string name="surveys">Survey</string>
+    <string name="access_points">Access point</string>
+    <string name="add_floor">Aggiungi piano</string>
+    <string name="add_floor_image">Da immagine</string>
+    <string name="add_floor_pdf">Da PDF (prima pagina)</string>
+    <string name="floor_name_hint">Nome piano</string>
+    <string name="floors_empty">Nessun piano. Aggiungi una planimetria.</string>
+    <string name="surveys_empty">Nessuna survey. Apri un piano e avvia la registrazione.</string>
+    <string name="aps_empty">Nessun AP rilevato.</string>
+    <string name="floor_calibrated">Scala: %1$.1f m × %2$.1f m</string>
+    <string name="floor_not_calibrated">Non calibrato</string>
+    <string name="survey_summary">%1$s · %2$d scansioni · %3$d punti</string>
+    <string name="ap_summary">%1$s · %2$d BSSID</string>
+    <string name="export">Esporta</string>
+    <string name="export_csv">CSV misure</string>
+    <string name="export_json">Backup progetto (.zip)</string>
+    <string name="export_png">Heatmap PNG</string>
+    <string name="export_pdf">Report PDF</string>
+    <string name="export_esx">Ekahau .esx</string>
+    <string name="settings">Impostazioni</string>
+    <string name="edit_project">Dati progetto</string>
+    <string name="sync_aps">Aggiorna AP dalle misure</string>
+    <string name="export_done">Esportazione pronta: %1$s</string>
+    <string name="export_error">Errore esportazione: %1$s</string>
+    <string name="ap_mine">Mio</string>
+    <string name="ap_vendor_hint">Vendor</string>
+    <string name="ap_model_hint">Modello</string>
+    <string name="delete_survey_confirm">Eliminare la survey \"%1$s\"?</string>
+    <string name="delete_floor_confirm">Eliminare il piano \"%1$s\" e le sue survey?</string>
+
+    <!-- Floor -->
+    <string name="mode_survey">Survey</string>
+    <string name="mode_calibrate">Calibra</string>
+    <string name="mode_ap">AP</string>
+    <string name="start_survey">Avvia survey</string>
+    <string name="stop_survey">Termina survey</string>
+    <string name="survey_continuous">Continua (tocca → cammina → tocca)</string>
+    <string name="survey_stop_and_go">Stop-and-go (tocca e fermati)</string>
+    <string name="survey_name_hint">Nome survey</string>
+    <string name="tap_start_point">Tocca la mappa nel punto in cui ti trovi</string>
+    <string name="tap_next_point">Cammina in linea retta e tocca il punto raggiunto</string>
+    <string name="stop_go_collecting">Fermo: raccolgo %1$d/%2$d scansioni…</string>
+    <string name="stop_go_next">Spostati e tocca il prossimo punto</string>
+    <string name="calib_first">Calibrazione: tocca il primo punto di riferimento</string>
+    <string name="calib_second">Tocca il secondo punto di riferimento</string>
+    <string name="calib_distance">Distanza reale tra i due punti (metri)</string>
+    <string name="calib_done">Calibrato: %1$.3f m/px</string>
+    <string name="ap_place">Tocca dove si trova l\'AP</string>
+    <string name="ap_choose">Scegli l\'AP da posizionare</string>
+    <string name="ap_new">Nuovo AP…</string>
+    <string name="heatmap_none">Nessuna heatmap</string>
+    <string name="heatmap_metric">Metrica</string>
+    <string name="filter_all_ssid">Tutti gli SSID</string>
+    <string name="filter_all_bands">Tutte le bande</string>
+    <string name="status_idle">Scanner fermo</string>
+    <string name="status_scanning">Scansioni: %1$d · ultimo: %2$d reti · max %3$d dBm</string>
+    <string name="status_throttled">ATTENZIONE: scan throttling attivo. Disattivalo in Opzioni sviluppatore.</string>
+    <string name="status_stale">Risultati non aggiornati: %1$d (throttling?)</string>
+    <string name="not_calibrated_warn">Piano non calibrato: calibra la scala prima di fare la survey.</string>
+    <string name="perm_needed">Servono i permessi di posizione e Wi-Fi per la scansione.</string>
+    <string name="location_off">Attiva la localizzazione del telefono: Android la richiede per le scansioni Wi-Fi.</string>
+    <string name="wifi_off">Il Wi-Fi è spento.</string>
+    <string name="undo_point">Annulla ultimo punto</string>
+    <string name="legend">Legenda</string>
+    <string name="show_path">Percorso</string>
+    <string name="show_aps">AP</string>
+    <string name="opacity">Opacità</string>
+    <string name="survey_saved">Survey salvata: %1$d scansioni localizzate</string>
+    <string name="survey_discarded">Survey vuota, scartata</string>
+    <string name="throttle_help_title">Scan throttling</string>
+    <string name="throttle_help">Android limita le scansioni Wi-Fi a 4 ogni 2 minuti. Per una survey devi disattivare il limite:\n\n1. Impostazioni → Info telefono → tocca 7 volte \"Numero build\"\n2. Impostazioni → Sistema → Opzioni sviluppatore\n3. Disattiva \"Limitazione scansione Wi-Fi\" (Wi-Fi scan throttling)\n\nPoi torna qui.</string>
+    <string name="open_dev_settings">Apri Opzioni sviluppatore</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Impostazioni progetto</string>
+    <string name="s_interval">Intervallo scansione (ms)</string>
+    <string name="s_stopgo">Scansioni per punto (stop-and-go)</string>
+    <string name="s_radius">Raggio interpolazione heatmap (m)</string>
+    <string name="s_good">Soglia segnale buono (dBm)</string>
+    <string name="s_ok">Soglia segnale sufficiente (dBm)</string>
+    <string name="s_min">Segnale minimo utile (dBm)</string>
+    <string name="s_apcount">Soglia per conteggio AP (dBm)</string>
+    <string name="s_noise">Rumore di fondo stimato per SNR (dBm)</string>
+    <string name="s_note">Android non espone il livello di rumore: l\'SNR è calcolato con il rumore di fondo impostato qui. Le soglie colorano le heatmap e il report.</string>
+
+    <!-- Export dialog -->
+    <string name="export_title">Esporta</string>
+    <string name="export_saved_share">File pronto. Condividi o salva.</string>
+</resources>
