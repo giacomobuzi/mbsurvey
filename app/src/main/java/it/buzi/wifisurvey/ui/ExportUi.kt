@@ -2,7 +2,7 @@ package it.buzi.wifisurvey.ui
 
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import it.buzi.wifisurvey.R
@@ -36,7 +36,7 @@ class ExportUi(private val activity: AppCompatActivity) {
     fun showMenu(project: Project) {
         val kinds = ExportKind.values()
         val labels = kinds.map { activity.getString(it.labelRes) }.toTypedArray()
-        AlertDialog.Builder(activity)
+        MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.export_title)
             .setItems(labels) { _, which -> run(project, kinds[which]) }
             .show()
@@ -54,7 +54,7 @@ class ExportUi(private val activity: AppCompatActivity) {
     }
 
     private fun offer(file: File, mime: String) {
-        AlertDialog.Builder(activity)
+        MaterialAlertDialogBuilder(activity)
             .setTitle(file.name)
             .setMessage(R.string.export_saved_share)
             .setPositiveButton(R.string.share) { _, _ -> ShareUtil.share(activity, file, mime) }

@@ -15,7 +15,7 @@ import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -107,10 +107,15 @@ class ProjectActivity : AppCompatActivity() {
 
         b.addFloor.setOnClickListener { v ->
             val m = PopupMenu(this, v)
-            m.menu.add(0, 1, 0, R.string.add_floor_image)
-            m.menu.add(0, 2, 1, R.string.add_floor_pdf)
+            m.menu.add(0, 3, 0, R.string.add_floor_draw)
+            m.menu.add(0, 1, 1, R.string.add_floor_image)
+            m.menu.add(0, 2, 2, R.string.add_floor_pdf)
             m.setOnMenuItemClickListener {
-                if (it.itemId == 1) pickImage.launch(arrayOf("image/*")) else pickPdf.launch(arrayOf("application/pdf"))
+                when (it.itemId) {
+                    1 -> pickImage.launch(arrayOf("image/*"))
+                    2 -> pickPdf.launch(arrayOf("application/pdf"))
+                    3 -> startActivity(Intent(this, PlanEditorActivity::class.java).putExtra(PlanEditorActivity.EXTRA_PROJECT, project.id))
+                }
                 true
             }
             m.show()
@@ -212,9 +217,11 @@ class ProjectActivity : AppCompatActivity() {
     private fun floorMenu(f: Floor, anchor: View) {
         val m = PopupMenu(this, anchor)
         m.menu.add(0, 1, 0, R.string.rename)
-        m.menu.add(0, 2, 1, R.string.delete)
+        if (f.isDrawn) m.menu.add(0, 3, 1, R.string.edit_drawing)
+        m.menu.add(0, 2, 2, R.string.delete)
         m.setOnMenuItemClickListener {
             when (it.itemId) {
+                3 -> startActivity(Intent(this, PlanEditorActivity::class.java).putExtra(PlanEditorActivity.EXTRA_PROJECT, project.id).putExtra(PlanEditorActivity.EXTRA_FLOOR, f.id))
                 1 -> Dialogs.textInput(this, getString(R.string.rename), getString(R.string.floor_name_hint), f.name) { n ->
                     if (n.isNotBlank()) { f.name = n; store.save(project); refresh() }
                 }
@@ -259,7 +266,7 @@ class ProjectActivity : AppCompatActivity() {
         d.model.setText(ap.model)
         d.mine.isChecked = ap.mine
         d.bssids.text = ap.bssids.joinToString("\n")
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(R.string.access_points)
             .setView(d.root)
             .setPositiveButton(R.string.save) { _, _ ->
@@ -309,7 +316,7 @@ class ProjectActivity : AppCompatActivity() {
         val d = DialogProjectBinding.inflate(layoutInflater)
         d.name.setText(project.name); d.customer.setText(project.customer)
         d.location.setText(project.location); d.surveyor.setText(project.surveyor)
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(R.string.edit_project)
             .setView(d.root)
             .setPositiveButton(R.string.save) { _, _ ->

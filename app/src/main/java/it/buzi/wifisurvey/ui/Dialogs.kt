@@ -6,7 +6,7 @@ import android.provider.Settings
 import android.text.InputType
 import android.widget.EditText
 import android.widget.FrameLayout
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.buzi.wifisurvey.R
 
 object Dialogs {
@@ -26,7 +26,7 @@ object Dialogs {
             setPadding(pad, pad / 2, pad, 0)
             addView(edit)
         }
-        AlertDialog.Builder(ctx)
+        MaterialAlertDialogBuilder(ctx)
             .setTitle(title)
             .setView(container)
             .setPositiveButton(R.string.ok) { _, _ -> onOk(edit.text.toString().trim()) }
@@ -35,7 +35,7 @@ object Dialogs {
     }
 
     fun confirm(ctx: Context, message: String, onYes: () -> Unit) {
-        AlertDialog.Builder(ctx)
+        MaterialAlertDialogBuilder(ctx)
             .setMessage(message)
             .setPositiveButton(R.string.ok) { _, _ -> onYes() }
             .setNegativeButton(R.string.cancel, null)
@@ -43,11 +43,11 @@ object Dialogs {
     }
 
     fun info(ctx: Context, title: String, message: String) {
-        AlertDialog.Builder(ctx).setTitle(title).setMessage(message).setPositiveButton(R.string.ok, null).show()
+        MaterialAlertDialogBuilder(ctx).setTitle(title).setMessage(message).setPositiveButton(R.string.ok, null).show()
     }
 
     fun throttleHelp(ctx: Context) {
-        AlertDialog.Builder(ctx)
+        MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.throttle_help_title)
             .setMessage(R.string.throttle_help)
             .setPositiveButton(R.string.open_dev_settings) { _, _ ->

@@ -53,7 +53,7 @@ class WizardActivity : AppCompatActivity() {
         val prepProblems = prepProblems()
 
         step(1, getString(R.string.wz_step_floor), floors > 0, getString(R.string.wz_floor_status, floors), getString(R.string.wz_floor_desc),
-            getString(R.string.wz_add_floor)) { openProject() }
+            getString(R.string.add_floor_draw)) { startActivity(Intent(this, PlanEditorActivity::class.java).putExtra(PlanEditorActivity.EXTRA_PROJECT, project.id)) }
 
         step(2, getString(R.string.wz_step_calib), floors > 0 && calibrated == floors, getString(R.string.wz_calib_status, calibrated, floors), getString(R.string.wz_calib_desc),
             getString(R.string.wz_open_floor)) { openFloor() }

@@ -13,7 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -297,7 +297,7 @@ class FloorActivity : AppCompatActivity() {
     private fun placeAp(x: Double, y: Double) {
         val aps = project.accessPoints
         val labels = aps.map { it.name } + getString(R.string.ap_new)
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(R.string.ap_choose)
             .setItems(labels.toTypedArray()) { _, which ->
                 if (which < aps.size) {
@@ -339,7 +339,7 @@ class FloorActivity : AppCompatActivity() {
         if (!preflight()) return
         val d = DialogSurveyStartBinding.inflate(layoutInflater)
         d.name.setText("Survey ${project.surveysOf(floor.id).size + 1}")
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(R.string.start_survey)
             .setView(d.root)
             .setPositiveButton(R.string.ok) { _, _ ->

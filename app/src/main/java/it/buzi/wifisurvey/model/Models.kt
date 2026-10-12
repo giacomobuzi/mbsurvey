@@ -71,9 +71,11 @@ class Floor(
     var widthPx: Int,
     var heightPx: Int,
     var metersPerPx: Double = 0.0,
-    var calibration: Calibration? = null
+    var calibration: Calibration? = null,
+    var drawing: PlanDrawing? = null
 ) {
     val isCalibrated: Boolean get() = metersPerPx > 0
+    val isDrawn: Boolean get() = drawing != null
 
     fun toJson(): JSONObject = JSONObject()
         .put("id", id)
@@ -83,6 +85,7 @@ class Floor(
         .put("heightPx", heightPx)
         .put("metersPerPx", metersPerPx)
         .put("calibration", calibration?.toJson() ?: JSONObject.NULL)
+        .put("drawing", drawing?.toJson() ?: JSONObject.NULL)
 
     companion object {
         fun fromJson(o: JSONObject): Floor = Floor(
@@ -92,7 +95,8 @@ class Floor(
             widthPx = o.optInt("widthPx"),
             heightPx = o.optInt("heightPx"),
             metersPerPx = o.optDouble("metersPerPx", 0.0),
-            calibration = Calibration.fromJson(o.optJSONObject("calibration"))
+            calibration = Calibration.fromJson(o.optJSONObject("calibration")),
+            drawing = o.optJSONObject("drawing")?.let { PlanDrawing.fromJson(it) }
         )
     }
 }

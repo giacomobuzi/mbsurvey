@@ -34,6 +34,7 @@
         <activity android:name=".ui.SettingsActivity" android:parentActivityName=".ui.ProjectActivity" />
         <activity android:name=".ui.WizardActivity" android:parentActivityName=".ui.ProjectActivity" />
         <activity android:name=".ui.HelpActivity" />
+        <activity android:name=".ui.PlanEditorActivity" android:parentActivityName=".ui.ProjectActivity" android:screenOrientation="portrait" />
 
         <service
             android:name=".wifi.WifiScanService"

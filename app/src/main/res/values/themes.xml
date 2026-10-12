@@ -1,12 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.WiFiSurvey" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.WiFiSurvey.Base" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorSecondary">@color/accent</item>
         <item name="colorOnSecondary">#000000</item>
+        <item name="colorSurface">@color/surface</item>
         <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="android:windowBackground">@color/bg</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.WiFiSurvey.Dialog</item>
+        <item name="textAppearanceButton">@style/TextAppearance.WiFiSurvey.Button</item>
+        <item name="materialButtonStyle">@style/Widget.WiFiSurvey.Button</item>
+        <item name="shapeAppearanceSmallComponent">@style/Shape.WiFiSurvey.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/Shape.WiFiSurvey.Medium</item>
+    </style>
+
+    <style name="Theme.WiFiSurvey" parent="Theme.WiFiSurvey.Base" />
+
+    <style name="ThemeOverlay.WiFiSurvey.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="shapeAppearanceOverlay">@style/Shape.WiFiSurvey.Dialog</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/TextAppearance.WiFiSurvey.DialogTitle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.WiFiSurvey.DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.WiFiSurvey.DialogButtonText</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.WiFiSurvey.DialogButtonText</item>
+    </style>
+
+    <style name="Shape.WiFiSurvey.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+    <style name="Shape.WiFiSurvey.Small" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">10dp</item>
+    </style>
+    <style name="Shape.WiFiSurvey.Medium" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">14dp</item>
+    </style>
+
+    <style name="TextAppearance.WiFiSurvey.DialogTitle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
+    </style>
+    <style name="TextAppearance.WiFiSurvey.Button" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="Widget.WiFiSurvey.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textAppearance">@style/TextAppearance.WiFiSurvey.Button</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+    <style name="Widget.WiFiSurvey.DialogButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textAppearance">@style/TextAppearance.WiFiSurvey.Button</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+    <style name="Widget.WiFiSurvey.DialogButtonText" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textAppearance">@style/TextAppearance.WiFiSurvey.Button</item>
     </style>
 </resources>

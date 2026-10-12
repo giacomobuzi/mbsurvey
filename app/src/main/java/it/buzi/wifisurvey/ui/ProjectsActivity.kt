@@ -11,7 +11,7 @@ import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -92,7 +92,7 @@ class ProjectsActivity : AppCompatActivity() {
 
     private fun newProject() {
         val d = DialogProjectBinding.inflate(layoutInflater)
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(R.string.new_project)
             .setView(d.root)
             .setPositiveButton(R.string.ok) { _, _ ->

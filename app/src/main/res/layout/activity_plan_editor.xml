@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:titleTextColor="#FFFFFF"
+        app:subtitleTextColor="#DDFFFFFF" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <it.buzi.wifisurvey.ui.PlanEditorView
+            android:id="@+id/editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_status"
+            android:padding="10dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toolGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toolSelect"
+                style="@style/Widget.WiFiSurvey.ToolButton"
+                android:text="@string/pe_tool_select"
+                app:icon="@drawable/ic_select" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toolRoom"
+                style="@style/Widget.WiFiSurvey.ToolButton"
+                android:text="@string/pe_tool_room"
+                app:icon="@drawable/ic_room" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toolWall"
+                style="@style/Widget.WiFiSurvey.ToolButton"
+                android:text="@string/pe_tool_wall"
+                app:icon="@drawable/ic_wall" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/toolDoor"
+                style="@style/Widget.WiFiSurvey.ToolButton"
+                android:text="@string/pe_tool_door"
+                app:icon="@drawable/ic_door" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sizeBtn"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pe_size"
+                app:icon="@drawable/ic_resize" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/renameBtn"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rename" />
+            <Space android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+            <ImageButton
+                android:id="@+id/undoBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/pe_undo"
+                android:src="@drawable/ic_undo"
+                app:tint="@color/text_muted" />
+            <ImageButton
+                android:id="@+id/deleteBtn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/warn" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

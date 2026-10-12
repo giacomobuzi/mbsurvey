@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/pe_size_help" android:textColor="@color/text_muted" android:paddingBottom="8dp" />
+    <EditText android:id="@+id/widthM" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/pe_width_m" android:inputType="numberDecimal" />
+    <EditText android:id="@+id/heightM" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/pe_height_m" android:inputType="numberDecimal" />
+</LinearLayout>

@@ -134,7 +134,7 @@
 <p>Crea un progetto (cliente, sede, rilevatore) oppure usa <b>Importa .esx</b> per caricare un progetto Ekahau esistente: vengono importate planimetrie, scala e access point pianificati, così puoi validare il design sul campo.</p>
 
 <h2>2. Planimetria</h2>
-<p><b>Aggiungi piano</b> da immagine (JPG/PNG) o PDF (prima pagina). Va bene anche una foto di uno schizzo. Un piano per ogni livello dell\'edificio.</p>
+<p><b>Aggiungi piano</b> → <b>Disegna planimetria</b> per crearla sul telefono: imposti le dimensioni in metri, trascini per disegnare stanze e aree (con nome), muri e scaffalature, tocchi un bordo per mettere una porta. La scala viene calibrata da sola. Oppure carica un\'immagine (JPG/PNG) o un PDF: va bene anche una foto di uno schizzo. Un piano per ogni livello dell\'edificio.</p>
 
 <h2>3. Calibrazione</h2>
 <p>Apri il piano, in basso scegli <b>Calibra</b>, tocca due punti a distanza nota (una parete, una campata tra colonne, una porta) e inserisci i metri. Serve per le aree in m², il raggio delle heatmap e la scala nel file Ekahau. Più lunga è la distanza di riferimento, più precisa è la calibrazione.</p>
@@ -192,4 +192,29 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="wz_prep_loc">localizzazione</string>
     <string name="wz_prep_wifi">Wi-Fi</string>
     <string name="wz_prep_throttle">scan throttling</string>
+
+    <!-- Plan editor -->
+    <string name="add_floor_draw">Disegna planimetria</string>
+    <string name="edit_drawing">Modifica disegno</string>
+    <string name="pe_title">Disegna planimetria</string>
+    <string name="pe_tool_select">Seleziona</string>
+    <string name="pe_tool_room">Stanza</string>
+    <string name="pe_tool_wall">Muro</string>
+    <string name="pe_tool_door">Porta</string>
+    <string name="pe_size">Dimensioni</string>
+    <string name="pe_undo">Annulla</string>
+    <string name="pe_size_help">Dimensioni totali del piano in metri. Puoi cambiarle anche dopo.</string>
+    <string name="pe_width_m">Larghezza (m)</string>
+    <string name="pe_height_m">Profondità (m)</string>
+    <string name="pe_hint_select">Tocca un elemento per selezionarlo, trascina per spostarlo, trascina gli angoli per ridimensionare. Doppio tocco su una stanza per rinominarla. Due dita per zoom.</string>
+    <string name="pe_hint_room">Trascina sul piano per disegnare una stanza o un\'area (magazzino, uffici, corsia).</string>
+    <string name="pe_hint_wall">Trascina per disegnare un muro o una scaffalatura. Si allinea da solo in orizzontale o verticale.</string>
+    <string name="pe_hint_door">Tocca su un muro o sul bordo di una stanza per inserire una porta.</string>
+    <string name="pe_room_name">Nome della stanza</string>
+    <string name="pe_room_name_hint">es. Magazzino spedizioni</string>
+    <string name="pe_save">Salva planimetria</string>
+    <string name="pe_saved">Planimetria salvata e calibrata automaticamente</string>
+    <string name="pe_discard">Uscire senza salvare le modifiche?</string>
+    <string name="pe_floor_name">Nome del piano</string>
+    <string name="pe_empty">Disegna almeno una stanza o un muro prima di salvare.</string>
 </resources>
