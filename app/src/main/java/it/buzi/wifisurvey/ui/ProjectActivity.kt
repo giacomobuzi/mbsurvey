@@ -24,9 +24,6 @@ import it.buzi.wifisurvey.data.ProjectStore
 import it.buzi.wifisurvey.databinding.ActivityProjectBinding
 import it.buzi.wifisurvey.databinding.DialogApBinding
 import it.buzi.wifisurvey.databinding.DialogProjectBinding
-import it.buzi.wifisurvey.export.ExportKind
-import it.buzi.wifisurvey.export.Exporter
-import it.buzi.wifisurvey.export.ShareUtil
 import it.buzi.wifisurvey.model.AccessPoint
 import it.buzi.wifisurvey.model.Floor
 import it.buzi.wifisurvey.model.Project
@@ -36,7 +33,6 @@ import it.buzi.wifisurvey.wifi.WifiScanService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -53,7 +49,7 @@ class ProjectActivity : AppCompatActivity() {
     private lateinit var apsAdapter: TwoLineAdapter<AccessPoint>
     private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY)
 
-    private var pendingShareFile: File? = null
+    private val exportUi = ExportUi(this, ProjectStore(this))
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { addFloorFrom(it, false) }
@@ -61,16 +57,6 @@ class ProjectActivity : AppCompatActivity() {
     private val pickPdf = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { addFloorFrom(it, true) }
     }
-    private val saveFile = registerForActivityResult(ActivityResultContracts.CreateDocument("*/*")) { uri ->
-        val f = pendingShareFile
-        if (uri != null && f != null) {
-            runCatching {
-                contentResolver.openOutputStream(uri)?.use { out -> f.inputStream().use { it.copyTo(out) } }
-                Toast.makeText(this, getString(R.string.export_done, f.name), Toast.LENGTH_SHORT).show()
-            }.onFailure { Toast.makeText(this, it.message, Toast.LENGTH_LONG).show() }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = ActivityProjectBinding.inflate(layoutInflater)
@@ -135,6 +121,7 @@ class ProjectActivity : AppCompatActivity() {
             refresh()
         }
         b.throttleWarn.setOnClickListener { Dialogs.throttleHelp(this) }
+        b.wizardBtn.setOnClickListener { startActivity(Intent(this, WizardActivity::class.java).putExtra(EXTRA_ID, project.id)) }
     }
 
     override fun onResume() {
@@ -306,6 +293,8 @@ class ProjectActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.action_export -> exportDialog()
+            R.id.action_wizard -> startActivity(Intent(this, WizardActivity::class.java).putExtra(EXTRA_ID, project.id))
+            R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java).putExtra(EXTRA_ID, project.id))
             R.id.action_edit -> editProject()
             R.id.action_delete -> Dialogs.confirm(this, getString(R.string.delete_project_confirm, project.name)) {
@@ -334,33 +323,5 @@ class ProjectActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun exportDialog() {
-        val kinds = ExportKind.values()
-        val labels = kinds.map { getString(it.labelRes) }.toTypedArray()
-        AlertDialog.Builder(this)
-            .setTitle(R.string.export_title)
-            .setItems(labels) { _, which -> runExport(kinds[which]) }
-            .show()
-    }
-
-    private fun runExport(kind: ExportKind) {
-        Toast.makeText(this, "Esportazione…", Toast.LENGTH_SHORT).show()
-        lifecycleScope.launch {
-            val result = withContext(Dispatchers.Default) {
-                runCatching { Exporter(this@ProjectActivity, store).export(project, kind) }
-            }
-            result.onSuccess { file -> offerFile(file, kind.mime) }
-                .onFailure { e -> Dialogs.info(this@ProjectActivity, getString(R.string.export_title), getString(R.string.export_error, e.message ?: e.toString())) }
-        }
-    }
-
-    private fun offerFile(file: File, mime: String) {
-        AlertDialog.Builder(this)
-            .setTitle(file.name)
-            .setMessage(R.string.export_saved_share)
-            .setPositiveButton(R.string.share) { _, _ -> ShareUtil.share(this, file, mime) }
-            .setNeutralButton(R.string.save) { _, _ -> pendingShareFile = file; saveFile.launch(file.name) }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
+    private fun exportDialog() = exportUi.showMenu(project)
 }

@@ -116,4 +116,80 @@
     <!-- Export dialog -->
     <string name="export_title">Esporta</string>
     <string name="export_saved_share">File pronto. Condividi o salva.</string>
+
+    <!-- Help & wizard -->
+    <string name="help_title">Guida all\'uso</string>
+    <string name="wizard_title">Procedura guidata</string>
+    <string name="wizard_open">Procedura guidata</string>
+    <string name="help_html"><![CDATA[
+<h2>Come funziona</h2>
+<p>WiFi Survey registra, mentre cammini, tutte le reti Wi-Fi visibili dal telefono e le lega alla posizione che indichi sulla planimetria. Da queste misure costruisce le heatmap e il report, e genera i file per Ekahau e per altri strumenti.</p>
+
+<h2>Prima di iniziare</h2>
+<p>1. Concedi i permessi di <b>posizione</b>, <b>dispositivi Wi-Fi nelle vicinanze</b> e <b>notifiche</b> (Android li richiede per leggere le reti).<br/>
+2. Attiva la <b>localizzazione</b> del telefono.<br/>
+3. Disattiva la <b>limitazione scansione Wi-Fi</b> (scan throttling): Impostazioni → Info telefono → tocca 7 volte "Numero build" → Opzioni sviluppatore → "Limitazione scansione Wi-Fi" OFF. Senza questo passaggio Android fa solo 4 scansioni ogni 2 minuti e la survey è inutile. L\'app lo segnala con un banner rosso finché è attivo.</p>
+
+<h2>1. Progetto</h2>
+<p>Crea un progetto (cliente, sede, rilevatore) oppure usa <b>Importa .esx</b> per caricare un progetto Ekahau esistente: vengono importate planimetrie, scala e access point pianificati, così puoi validare il design sul campo.</p>
+
+<h2>2. Planimetria</h2>
+<p><b>Aggiungi piano</b> da immagine (JPG/PNG) o PDF (prima pagina). Va bene anche una foto di uno schizzo. Un piano per ogni livello dell\'edificio.</p>
+
+<h2>3. Calibrazione</h2>
+<p>Apri il piano, in basso scegli <b>Calibra</b>, tocca due punti a distanza nota (una parete, una campata tra colonne, una porta) e inserisci i metri. Serve per le aree in m², il raggio delle heatmap e la scala nel file Ekahau. Più lunga è la distanza di riferimento, più precisa è la calibrazione.</p>
+
+<h2>4. Survey</h2>
+<p>In modalità <b>Survey</b> premi il pulsante rosso, dai un nome e scegli:<br/>
+• <b>Continua</b>: tocca il punto esatto in cui ti trovi, cammina in linea retta a passo costante, tocca il punto raggiunto quando svolti o ti fermi, e così via. Le scansioni fatte lungo il tratto vengono distribuite in base al tempo: non fermarti a metà tratto e non cambiare direzione senza toccare.<br/>
+• <b>Stop-and-go</b>: tocca il punto, resta fermo finché l\'app raccoglie le scansioni previste, spostati e tocca il punto successivo. Più lento ma più preciso: adatto a scaffalature strette.<br/>
+Il riquadro in basso mostra scansioni fatte e reti viste: deve crescere ogni 2-3 secondi. <b>Annulla</b> toglie l\'ultimo punto. Premi di nuovo il pulsante per terminare: la survey viene salvata e compare nel progetto. Per un magazzino passa in ogni corsia, in entrambe le direzioni se le scaffalature sono alte.</p>
+
+<h2>5. Heatmap</h2>
+<p>Con i tre menu in alto scegli metrica, SSID e banda. Metriche: segnale primario (AP più forte), secondario (ridondanza per roaming), SNR stimato, numero di AP sopra soglia, interferenza di canale, singolo BSSID. Menu ⋮ → <b>Legenda</b> per scale, min/media/max, area rilevata e percentuali di copertura. Le soglie si cambiano in Impostazioni.</p>
+
+<h2>6. Access point</h2>
+<p><b>Aggiorna AP dalle misure</b> crea un AP per ogni gruppo di BSSID rilevati, con posizione stimata dai campioni più forti. In modalità <b>AP</b> sulla mappa tocchi dove si trova davvero un AP. Nella scheda AP li rinomini, inserisci vendor/modello e segni i tuoi (quelli non "miei" sono reti vicine).</p>
+
+<h2>7. Esportazione</h2>
+<p>Menu del progetto → <b>Esporta</b>:<br/>
+• <b>Report PDF</b>: sintesi, heatmap per piano con statistiche, tabelle AP e BSSID.<br/>
+• <b>CSV</b>: una riga per ogni lettura (tempo, posizione in px e metri, BSSID, SSID, dBm, canale), per Excel o altri tool.<br/>
+• <b>Ekahau .esx</b>: progetto apribile in Ekahau AI Pro (File → Open Project) con planimetrie, scala, AP e radio rilevate; le survey sono incluse in formato best-effort.<br/>
+• <b>PNG</b>: heatmap come immagini.<br/>
+• <b>Backup .zip</b>: progetto completo, reimportabile su un altro telefono.<br/>
+Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del telefono.</p>
+
+<h2>Consigli</h2>
+<p>Tieni il telefono davanti a te, all\'altezza dei terminali che userà il cliente. Cammina a 1 m/s circa. Non coprire il telefono con la mano. Per confrontare due survey nello stesso progetto filtra per SSID. I valori di uno smartphone differiscono di alcuni dB da un adattatore professionale: usali per validazione e troubleshooting, non per collaudi certificati.</p>
+]]></string>
+
+    <string name="wz_step_floor">Planimetria</string>
+    <string name="wz_step_calib">Calibrazione</string>
+    <string name="wz_step_prep">Telefono pronto</string>
+    <string name="wz_step_survey">Survey</string>
+    <string name="wz_step_aps">Access point</string>
+    <string name="wz_step_export">Esportazione</string>
+    <string name="wz_done">Fatto</string>
+    <string name="wz_todo">Da fare</string>
+    <string name="wz_floor_desc">Carica la planimetria del magazzino da immagine o PDF. Un piano per livello.</string>
+    <string name="wz_floor_status">%1$d piani caricati</string>
+    <string name="wz_calib_desc">Tocca due punti a distanza nota e inserisci i metri. Senza scala le aree e il file Ekahau sono sbagliati.</string>
+    <string name="wz_calib_status">%1$d di %2$d piani calibrati</string>
+    <string name="wz_prep_desc">Permessi concessi, localizzazione attiva, Wi-Fi acceso e scan throttling disattivato.</string>
+    <string name="wz_prep_ok">Tutto a posto</string>
+    <string name="wz_prep_ko">Da sistemare: %1$s</string>
+    <string name="wz_survey_desc">Apri il piano, premi il pulsante rosso e percorri tutte le corsie toccando la mappa a ogni cambio di direzione.</string>
+    <string name="wz_survey_status">%1$d survey, %2$d scansioni localizzate</string>
+    <string name="wz_aps_desc">Crea gli AP dai BSSID rilevati, rinominali e segna quelli del cliente.</string>
+    <string name="wz_aps_status">%1$d AP, di cui %2$d miei</string>
+    <string name="wz_export_desc">Report PDF per il cliente, CSV per l\'analisi, .esx per proseguire la progettazione in Ekahau.</string>
+    <string name="wz_export_status">Pronto per l\'export</string>
+    <string name="wz_open_floor">Apri piano</string>
+    <string name="wz_add_floor">Aggiungi piano</string>
+    <string name="wz_check">Controlla</string>
+    <string name="wz_prep_perm">permessi</string>
+    <string name="wz_prep_loc">localizzazione</string>
+    <string name="wz_prep_wifi">Wi-Fi</string>
+    <string name="wz_prep_throttle">scan throttling</string>
 </resources>

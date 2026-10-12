@@ -5,4 +5,5 @@
     <item android:id="@+id/action_show_aps" android:title="@string/show_aps" android:checkable="true" android:checked="true" app:showAsAction="never" />
     <item android:id="@+id/action_legend" android:title="@string/legend" app:showAsAction="never" />
     <item android:id="@+id/action_throttle_help" android:title="@string/throttle_help_title" app:showAsAction="never" />
+    <item android:id="@+id/action_help" android:title="@string/help_title" app:showAsAction="never" />
 </menu>

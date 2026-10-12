@@ -396,6 +396,7 @@ class FloorActivity : AppCompatActivity() {
             R.id.action_show_aps -> { item.isChecked = !item.isChecked; b.plan.showAps = item.isChecked }
             R.id.action_legend -> showLegend()
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)
+            R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             else -> return super.onOptionsItemSelected(item)
         }
         return true

@@ -133,6 +133,7 @@ class ProjectsActivity : AppCompatActivity() {
             R.id.action_import_esx -> pickEsx.launch(arrayOf("*/*"))
             R.id.action_import_json -> pickJson.launch(arrayOf("application/zip", "*/*"))
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)
+            R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             else -> return super.onOptionsItemSelected(item)
         }
         return true

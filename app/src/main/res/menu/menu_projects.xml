@@ -4,4 +4,5 @@
     <item android:id="@+id/action_import_esx" android:title="@string/import_esx" app:showAsAction="never" />
     <item android:id="@+id/action_import_json" android:title="@string/import_json" app:showAsAction="never" />
     <item android:id="@+id/action_throttle_help" android:title="@string/throttle_help_title" app:showAsAction="never" />
+    <item android:id="@+id/action_help" android:title="@string/help_title" app:showAsAction="never" />
 </menu>
