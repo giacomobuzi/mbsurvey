@@ -39,6 +39,7 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     var onRoomCreated: ((Room) -> Unit)? = null
     var onRoomTapped: ((Room) -> Unit)? = null
+    var onDoorTapped: ((Door) -> Unit)? = null
     var onSelectionChanged: ((String?) -> Unit)? = null
     var onChanged: (() -> Unit)? = null
     /** Called when a gesture that may modify the plan starts; onChanged or onChangeCancelled follows. */
@@ -93,7 +94,10 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
             return true
         }
         override fun onDoubleTap(e: MotionEvent): Boolean {
-            val r = roomAt(toMx(e.x), toMy(e.y))
+            val mx = toMx(e.x); val my = toMy(e.y)
+            val d = doorAt(mx, my, 24.0 / ppm)
+            if (d != null) { onDoorTapped?.invoke(d); return true }
+            val r = roomAt(mx, my)
             if (r != null) onRoomTapped?.invoke(r)
             return true
         }
@@ -171,6 +175,68 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
         return -1
     }
 
+    private var wallEnd = -1 // 0/1 when dragging a wall endpoint
+
+    private fun wallEndAt(w: Wall, sx: Float, sy: Float): Int {
+        if (hypot((toSx(w.x1) - sx).toDouble(), (toSy(w.y1) - sy).toDouble()) < 48) return 0
+        if (hypot((toSx(w.x2) - sx).toDouble(), (toSy(w.y2) - sy).toDouble()) < 48) return 1
+        return -1
+    }
+
+    /** Visible centre of the plan in metres (clamped inside the plan). */
+    private fun viewCentreM(): Pair<Double, Double> {
+        val cx = toMx(width / 2f).coerceIn(0.0, plan.widthM)
+        val cy = toMy(height / 2f).coerceIn(0.0, plan.heightM)
+        return Pair(cx, cy)
+    }
+
+    /** Creates a default-sized room near the centre of the view, offset so repeated taps don't overlap exactly. */
+    fun addRoom(name: String): Room {
+        beginChange()
+        val w = (plan.widthM / 4).coerceIn(2.0, 12.0).let { snap(it) }
+        val h = (plan.heightM / 4).coerceIn(2.0, 10.0).let { snap(it) }
+        val (cx, cy) = viewCentreM()
+        val k = plan.rooms.size % 4
+        val r = Room(name = name, x = snap(cx - w / 2 + k), y = snap(cy - h / 2 + k), w = w, h = h)
+        r.x = r.x.coerceIn(0.0, plan.widthM - w); r.y = r.y.coerceIn(0.0, plan.heightM - h)
+        plan.rooms.add(r)
+        selectedId = r.id
+        commitChange()
+        return r
+    }
+
+    /** Creates a horizontal wall near the centre of the view. */
+    fun addWall(): Wall {
+        beginChange()
+        val len = (plan.widthM / 3).coerceIn(2.0, 15.0).let { snap(it) }
+        val (cx, cy) = viewCentreM()
+        val k = (plan.walls.size % 4) * snapM
+        val w = Wall(x1 = snap(cx - len / 2), y1 = snap(cy + k), x2 = snap(cx + len / 2), y2 = snap(cy + k))
+        clampWall(w)
+        plan.walls.add(w)
+        selectedId = w.id
+        commitChange()
+        return w
+    }
+
+    private fun clampWall(w: Wall) {
+        w.x1 = w.x1.coerceIn(0.0, plan.widthM); w.x2 = w.x2.coerceIn(0.0, plan.widthM)
+        w.y1 = w.y1.coerceIn(0.0, plan.heightM); w.y2 = w.y2.coerceIn(0.0, plan.heightM)
+    }
+
+    private fun clampDoor(d: Door) {
+        val half = d.width / 2
+        if (d.horizontal) { d.x = d.x.coerceIn(half, plan.widthM - half); d.y = d.y.coerceIn(0.0, plan.heightM) }
+        else { d.y = d.y.coerceIn(half, plan.heightM - half); d.x = d.x.coerceIn(0.0, plan.widthM) }
+    }
+
+    fun selectedDoor(): Door? = plan.doors.firstOrNull { it.id == selectedId }
+    fun selectedWall(): Wall? = plan.walls.firstOrNull { it.id == selectedId }
+
+    fun setDoorWidth(d: Door, width: Double) {
+        beginChange(); d.width = width.coerceIn(0.5, 10.0); clampDoor(d); commitChange()
+    }
+
     // ---------------- interaction ----------------
 
     private fun onTap(mx: Double, my: Double) {
@@ -182,6 +248,7 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
                 val d = Door(x = snap(edge.first), y = snap(edge.second), horizontal = edge.third)
                 // keep the snapped point on the edge line
                 if (edge.third) d.y = edge.second else d.x = edge.first
+                clampDoor(d)
                 plan.doors.add(d)
                 selectedId = d.id
                 commitChange()
@@ -204,12 +271,17 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
                 lastSx = e.x; lastSy = e.y
                 dragStartMx = toMx(e.x); dragStartMy = toMy(e.y)
                 dragging = false
-                draft = null; moveTarget = null; resizeCorner = -1
+                draft = null; moveTarget = null; resizeCorner = -1; wallEnd = -1
                 if (tool == Tool.SELECT) {
                     val selRoom = plan.rooms.firstOrNull { it.id == selectedId }
                     if (selRoom != null) {
                         resizeCorner = cornerAt(selRoom, e.x, e.y)
                         if (resizeCorner >= 0) { moveTarget = selRoom; origRoom = doubleArrayOf(selRoom.x, selRoom.y, selRoom.w, selRoom.h) }
+                    }
+                    val selWall = selectedWall()
+                    if (moveTarget == null && selWall != null) {
+                        wallEnd = wallEndAt(selWall, e.x, e.y)
+                        if (wallEnd >= 0) { moveTarget = selWall; origRoom = doubleArrayOf(selWall.x1, selWall.y1, selWall.x2, selWall.y2) }
                     }
                     if (moveTarget == null) {
                         val tol = 24.0 / ppm
@@ -257,8 +329,15 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
                                 is Room -> if (resizeCorner >= 0) resize(t, o, resizeCorner, dx, dy) else {
                                     t.x = (o[0] + dx).coerceIn(0.0, plan.widthM - t.w); t.y = (o[1] + dy).coerceIn(0.0, plan.heightM - t.h)
                                 }
-                                is Wall -> { t.x1 = o[0] + dx; t.y1 = o[1] + dy; t.x2 = o[2] + dx; t.y2 = o[3] + dy }
-                                is Door -> { t.x = o[0] + dx; t.y = o[1] + dy }
+                                is Wall -> {
+                                    when (wallEnd) {
+                                        0 -> { t.x1 = o[0] + dx; t.y1 = o[1] + dy }
+                                        1 -> { t.x2 = o[2] + dx; t.y2 = o[3] + dy }
+                                        else -> { t.x1 = o[0] + dx; t.y1 = o[1] + dy; t.x2 = o[2] + dx; t.y2 = o[3] + dy }
+                                    }
+                                    clampWall(t)
+                                }
+                                is Door -> { t.x = o[0] + dx; t.y = o[1] + dy; clampDoor(t) }
                             }
                         }
                     }
@@ -324,6 +403,12 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
             }
         }
 
+        selectedWall()?.let { w ->
+            for (c in listOf(Pair(w.x1, w.y1), Pair(w.x2, w.y2))) {
+                canvas.drawCircle(toSx(c.first), toSy(c.second), 16f, handlePaint)
+                canvas.drawCircle(toSx(c.first), toSy(c.second), 16f, handleStroke)
+            }
+        }
         selectedRoom()?.let { r ->
             for (c in listOf(Pair(r.x, r.y), Pair(r.x + r.w, r.y), Pair(r.x + r.w, r.y + r.h), Pair(r.x, r.y + r.h))) {
                 canvas.drawCircle(toSx(c.first), toSy(c.second), 16f, handlePaint)

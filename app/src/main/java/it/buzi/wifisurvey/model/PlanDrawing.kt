@@ -33,13 +33,16 @@ class PlanDrawing(
     var heightM: Double = 40.0,
     val rooms: MutableList<Room> = mutableListOf(),
     val walls: MutableList<Wall> = mutableListOf(),
-    val doors: MutableList<Door> = mutableListOf()
+    val doors: MutableList<Door> = mutableListOf(),
+    var showDims: Boolean = true
 ) {
+    val totalRoomAreaM2: Double get() = rooms.sumOf { it.w * it.h }
+
     fun toJson(): JSONObject {
         val r = JSONArray(); rooms.forEach { r.put(it.toJson()) }
         val w = JSONArray(); walls.forEach { w.put(it.toJson()) }
         val d = JSONArray(); doors.forEach { d.put(it.toJson()) }
-        return JSONObject().put("widthM", widthM).put("heightM", heightM).put("rooms", r).put("walls", w).put("doors", d)
+        return JSONObject().put("widthM", widthM).put("heightM", heightM).put("rooms", r).put("walls", w).put("doors", d).put("showDims", showDims)
     }
 
     fun copy(): PlanDrawing = fromJson(toJson())
@@ -47,6 +50,7 @@ class PlanDrawing(
     companion object {
         fun fromJson(o: JSONObject): PlanDrawing {
             val p = PlanDrawing(o.optDouble("widthM", 60.0), o.optDouble("heightM", 40.0))
+            p.showDims = o.optBoolean("showDims", true)
             val r = o.optJSONArray("rooms") ?: JSONArray()
             for (i in 0 until r.length()) p.rooms.add(Room.fromJson(r.getJSONObject(i)))
             val w = o.optJSONArray("walls") ?: JSONArray()

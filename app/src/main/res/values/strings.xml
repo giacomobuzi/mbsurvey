@@ -217,4 +217,12 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="pe_discard">Uscire senza salvare le modifiche?</string>
     <string name="pe_floor_name">Nome del piano</string>
     <string name="pe_empty">Disegna almeno una stanza o un muro prima di salvare.</string>
+    <string name="pe_add_room">+ Stanza</string>
+    <string name="pe_add_wall">+ Muro</string>
+    <string name="pe_edit">Modifica</string>
+    <string name="pe_dims">Quote</string>
+    <string name="pe_door_width">Larghezza porta (m)</string>
+    <string name="pe_total_area">Stanze: %1$d · %2$.0f m²</string>
+    <string name="pe_hint_select2">Tocca un elemento per selezionarlo, trascina per spostarlo, usa le maniglie per ridimensionarlo. + Stanza e + Muro aggiungono elementi al centro. Doppio tocco: rinomina stanza o larghezza porta.</string>
+    <string name="duplicate_floor">Duplica disegno come nuovo piano</string>
 </resources>

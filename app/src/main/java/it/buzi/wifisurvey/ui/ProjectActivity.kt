@@ -26,6 +26,8 @@ import it.buzi.wifisurvey.databinding.DialogApBinding
 import it.buzi.wifisurvey.databinding.DialogProjectBinding
 import it.buzi.wifisurvey.model.AccessPoint
 import it.buzi.wifisurvey.model.Floor
+import it.buzi.wifisurvey.model.PlanDrawing
+import it.buzi.wifisurvey.plan.PlanRenderer
 import it.buzi.wifisurvey.model.Project
 import it.buzi.wifisurvey.model.Survey
 import it.buzi.wifisurvey.survey.SurveyEngine
@@ -217,11 +219,24 @@ class ProjectActivity : AppCompatActivity() {
     private fun floorMenu(f: Floor, anchor: View) {
         val m = PopupMenu(this, anchor)
         m.menu.add(0, 1, 0, R.string.rename)
-        if (f.isDrawn) m.menu.add(0, 3, 1, R.string.edit_drawing)
-        m.menu.add(0, 2, 2, R.string.delete)
+        if (f.isDrawn) { m.menu.add(0, 3, 1, R.string.edit_drawing); m.menu.add(0, 4, 2, R.string.duplicate_floor) }
+        m.menu.add(0, 2, 3, R.string.delete)
         m.setOnMenuItemClickListener {
             when (it.itemId) {
                 3 -> startActivity(Intent(this, PlanEditorActivity::class.java).putExtra(PlanEditorActivity.EXTRA_PROJECT, project.id).putExtra(PlanEditorActivity.EXTRA_FLOOR, f.id))
+                4 -> Dialogs.textInput(this, getString(R.string.duplicate_floor), getString(R.string.floor_name_hint), "Piano ${project.floors.size + 1}") { n ->
+                    val drawing = f.drawing ?: return@textInput
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.Default) {
+                            val copy = drawing.copy()
+                            val nf = store.addFloor(project, n.ifBlank { "Piano" }, PlanRenderer.toBitmap(copy), 4096)
+                            nf.drawing = copy
+                            nf.metersPerPx = 1.0 / PlanDrawing.pxPerMeter(copy.widthM, copy.heightM)
+                            store.save(project)
+                        }
+                        refresh()
+                    }
+                }
                 1 -> Dialogs.textInput(this, getString(R.string.rename), getString(R.string.floor_name_hint), f.name) { n ->
                     if (n.isNotBlank()) { f.name = n; store.save(project); refresh() }
                 }

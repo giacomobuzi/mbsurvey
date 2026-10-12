@@ -12,6 +12,7 @@ import it.buzi.wifisurvey.R
 import it.buzi.wifisurvey.data.ProjectStore
 import it.buzi.wifisurvey.databinding.ActivityPlanEditorBinding
 import it.buzi.wifisurvey.databinding.DialogPlanSizeBinding
+import it.buzi.wifisurvey.model.Door
 import it.buzi.wifisurvey.model.Floor
 import it.buzi.wifisurvey.model.PlanDrawing
 import it.buzi.wifisurvey.model.Project
@@ -56,30 +57,35 @@ class PlanEditorActivity : AppCompatActivity() {
         b.editor.plan = floor?.drawing?.copy() ?: PlanDrawing()
         b.editor.onBeforeChange = { snapshot() }
         b.editor.onChangeCancelled = { undo.removeLastOrNull() }
-        b.editor.onChanged = { dirty = true }
+        b.editor.onChanged = { dirty = true; updateSummary() }
         b.editor.onRoomCreated = { r -> askRoomName(r) }
         b.editor.onRoomTapped = { r -> askRoomName(r) }
-        b.editor.onSelectionChanged = { id -> b.renameBtn.isEnabled = b.editor.selectedRoom() != null; b.deleteBtn.isEnabled = id != null }
+        b.editor.onDoorTapped = { d -> askDoorWidth(d) }
+        b.editor.onSelectionChanged = { id ->
+            b.renameBtn.isEnabled = b.editor.selectedRoom() != null || b.editor.selectedDoor() != null
+            b.deleteBtn.isEnabled = id != null
+        }
 
         b.toolGroup.check(b.toolSelect.id)
         b.toolGroup.addOnButtonCheckedListener { _, id, checked ->
             if (!checked) return@addOnButtonCheckedListener
-            b.editor.tool = when (id) {
-                b.toolRoom.id -> PlanEditorView.Tool.ROOM
-                b.toolWall.id -> PlanEditorView.Tool.WALL
-                b.toolDoor.id -> PlanEditorView.Tool.DOOR
-                else -> PlanEditorView.Tool.SELECT
-            }
-            b.hint.text = when (b.editor.tool) {
-                PlanEditorView.Tool.ROOM -> getString(R.string.pe_hint_room)
-                PlanEditorView.Tool.WALL -> getString(R.string.pe_hint_wall)
-                PlanEditorView.Tool.DOOR -> getString(R.string.pe_hint_door)
-                PlanEditorView.Tool.SELECT -> getString(R.string.pe_hint_select)
-            }
+            b.editor.tool = if (id == b.toolDoor.id) PlanEditorView.Tool.DOOR else PlanEditorView.Tool.SELECT
+            b.hint.text = if (b.editor.tool == PlanEditorView.Tool.DOOR) getString(R.string.pe_hint_door) else getString(R.string.pe_hint_select2)
         }
-        b.hint.text = getString(R.string.pe_hint_select)
+        b.hint.text = getString(R.string.pe_hint_select2)
+        b.addRoom.setOnClickListener {
+            b.toolGroup.check(b.toolSelect.id)
+            val r = b.editor.addRoom("Stanza ${b.editor.plan.rooms.size + 1}")
+            updateSummary()
+            askRoomName(r)
+        }
+        b.addWall.setOnClickListener { b.toolGroup.check(b.toolSelect.id); b.editor.addWall() }
+        b.dimsBtn.isChecked = b.editor.plan.showDims
+        b.dimsBtn.addOnCheckedChangeListener { _, checked -> b.editor.plan.showDims = checked; dirty = true; b.editor.invalidate() }
         b.sizeBtn.setOnClickListener { askSize() }
-        b.renameBtn.setOnClickListener { b.editor.selectedRoom()?.let { askRoomName(it) } }
+        b.renameBtn.setOnClickListener {
+            b.editor.selectedRoom()?.let { askRoomName(it) } ?: b.editor.selectedDoor()?.let { askDoorWidth(it) }
+        }
         b.deleteBtn.setOnClickListener { b.editor.deleteSelected() }
         b.undoBtn.setOnClickListener { undoLast() }
         b.renameBtn.isEnabled = false
@@ -89,6 +95,7 @@ class PlanEditorActivity : AppCompatActivity() {
             override fun handleOnBackPressed() { confirmExit() }
         })
 
+        updateSummary()
         if (floor == null) askSize(first = true)
     }
 
@@ -119,10 +126,23 @@ class PlanEditorActivity : AppCompatActivity() {
                     b.editor.plan.widthM = w; b.editor.plan.heightM = h
                     b.editor.fitToScreen()
                     dirty = true
+                    updateSummary()
                 }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun updateSummary() {
+        val p = b.editor.plan
+        supportActionBar?.subtitle = getString(R.string.pe_total_area, p.rooms.size, p.totalRoomAreaM2) + " · " + "%.0f × %.0f m".format(p.widthM, p.heightM)
+    }
+
+    private fun askDoorWidth(d: Door) {
+        Dialogs.textInput(this, getString(R.string.pe_tool_door), getString(R.string.pe_door_width), "%.1f".format(d.width).replace(',', '.'),
+            android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL) { v ->
+            v.replace(',', '.').toDoubleOrNull()?.let { b.editor.setDoorWidth(d, it); dirty = true }
+        }
     }
 
     private fun askRoomName(r: Room) {

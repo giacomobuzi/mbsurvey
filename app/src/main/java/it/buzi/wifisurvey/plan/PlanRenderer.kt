@@ -70,12 +70,14 @@ object PlanRenderer {
             roomFill.color = roomFills[i % roomFills.size]
             c.drawRect(rect, roomFill)
             c.drawRect(rect, if (r.id == selectedId) sel else roomStroke)
-            if (labels && r.name.isNotBlank()) {
+            if (labels && (r.name.isNotBlank() || plan.showDims)) {
                 val size = (ppm * 0.9f).coerceIn(10f, 60f).coerceAtMost(rect.width() / maxOf(4, r.name.length) * 1.6f)
                 label.textSize = size
                 c.drawText(r.name, rect.centerX(), rect.centerY() + size / 3f, label)
-                labelSmall.textSize = size * 0.6f
-                c.drawText("%.1f × %.1f m".format(r.w, r.h), rect.centerX(), rect.centerY() + size * 1.1f, labelSmall)
+                if (plan.showDims) {
+                    labelSmall.textSize = size * 0.6f
+                    c.drawText("%.1f × %.1f m · %.0f m²".format(r.w, r.h, r.w * r.h), rect.centerX(), rect.centerY() + size * 1.1f, labelSmall)
+                }
             }
         }
 
