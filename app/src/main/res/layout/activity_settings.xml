@@ -39,6 +39,20 @@
             <TextView style="@style/SettingLabel" android:text="@string/s_noise" />
             <EditText android:id="@+id/noise" style="@style/SettingInput" />
 
+            <TextView style="@style/SectionHeader" android:paddingStart="0dp" android:text="@string/s_active_section" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/activeSurvey"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/s_active" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/s_active_note" android:textColor="@color/text_muted" android:textSize="13sp" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_ping_target" />
+            <EditText android:id="@+id/pingTarget" style="@style/SettingInput" android:inputType="textUri" android:hint="@string/s_ping_target_hint" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_ping_probes" />
+            <EditText android:id="@+id/pingProbes" style="@style/SettingInput" android:inputType="number" />
+            <TextView style="@style/SettingLabel" android:text="@string/s_latency_good" />
+            <EditText android:id="@+id/latencyGood" style="@style/SettingInput" android:inputType="number" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "it.buzi.wifisurvey"
+    namespace = "it.buzi.mbsurvey"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "it.buzi.wifisurvey"
+        applicationId = "it.buzi.mbsurvey"
         minSdk = 29
         targetSdk = 35
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()

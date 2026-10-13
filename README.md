@@ -1,6 +1,6 @@
-# WiFi Survey (Android)
+# MB Survey (Android)
 
-App Android per site survey Wi-Fi passivi in stile Ekahau Survey: planimetria, calibrazione, survey continua o stop-and-go, heatmap, report PDF ed export verso Ekahau (.esx), CSV e PNG. Installazione via APK, senza Play Store.
+MB Survey: app Android per site survey Wi-Fi passivi e attivi in stile Ekahau Survey: planimetria, calibrazione, survey continua o stop-and-go, heatmap, report PDF ed export verso Ekahau (.esx), CSV e PNG. Installazione via APK, senza Play Store.
 
 ## Compilazione automatica (GitHub Actions)
 

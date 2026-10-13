@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WiFi Survey</string>
+    <string name="app_name">MB Survey</string>
     <string name="notif_channel">Scansione Wi-Fi</string>
     <string name="notif_scanning">Scansione Wi-Fi in corso</string>
     <string name="notif_last_scan">Ultima scansione: %1$d reti</string>
@@ -160,6 +160,12 @@ Il riquadro in basso mostra scansioni fatte e reti viste: deve crescere ogni 2-3
 • <b>Backup .zip</b>: progetto completo, reimportabile su un altro telefono.<br/>
 Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del telefono.</p>
 
+<h2>Survey attiva</h2>
+<p>In Impostazioni → <b>Survey attiva</b> l\'app esegue un ping (verso il gateway o un host a scelta) dopo ogni scansione e registra latenza e perdita di pacchetti per ogni punto. Compaiono due heatmap in più e due pagine nel report. Serve essere connessi alla rete del cliente.</p>
+
+<h2>Strumenti di rete</h2>
+<p>Dall\'icona chiave inglese: stato della connessione (SSID, BSSID, canale, link rate, IP, gateway, DNS, IP pubblico), ping con jitter, traceroute, scansione di una subnet con MAC e vendor (per un\'altra VLAN inserisci la sua subnet: va raggiunta via gateway), scansione porte, DNS, test di velocità HTTP (meglio con un server nella LAN) ed elenco completo delle reti Wi-Fi con vendor dell\'AP. Ogni risultato si condivide come testo.</p>
+
 <h2>Consigli</h2>
 <p>Tieni il telefono davanti a te, all\'altezza dei terminali che userà il cliente. Cammina a 1 m/s circa. Non coprire il telefono con la mano. Per confrontare due survey nello stesso progetto filtra per SSID. I valori di uno smartphone differiscono di alcuni dB da un adattatore professionale: usali per validazione e troubleshooting, non per collaudi certificati.</p>
 ]]></string>
@@ -225,4 +231,41 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="pe_total_area">Stanze: %1$d · %2$.0f m²</string>
     <string name="pe_hint_select2">Tocca un elemento per selezionarlo, trascina per spostarlo, usa le maniglie per ridimensionarlo. + Stanza e + Muro aggiungono elementi al centro. Doppio tocco: rinomina stanza o larghezza porta.</string>
     <string name="duplicate_floor">Duplica disegno come nuovo piano</string>
+
+    <!-- Network tools -->
+    <string name="tools_title">Strumenti di rete</string>
+    <string name="tool_info">Connessione</string>
+    <string name="tool_ping">Ping</string>
+    <string name="tool_trace">Traceroute</string>
+    <string name="tool_scan">Scansione rete</string>
+    <string name="tool_ports">Porte</string>
+    <string name="tool_dns">DNS</string>
+    <string name="tool_speed">Velocità</string>
+    <string name="tool_wifi">Reti Wi-Fi</string>
+    <string name="tool_run">Avvia</string>
+    <string name="tool_stop">Stop</string>
+    <string name="tool_share">Condividi risultato</string>
+    <string name="tool_help_info">Stato della connessione Wi-Fi attuale: rete, canale, velocità di link, IP, gateway, DNS.</string>
+    <string name="tool_help_ping">Host o IP, numero di pacchetti. Misura latenza, jitter e perdita.</string>
+    <string name="tool_help_trace">Host o IP. Mostra il percorso dei pacchetti hop per hop.</string>
+    <string name="tool_help_scan">Subnet in formato CIDR (es. 192.168.10.0/24). Per scansionare un\'altra VLAN inserisci la sua subnet: il telefono deve poterla raggiungere tramite il gateway. Porte sonda separate da virgola.</string>
+    <string name="tool_help_ports">IP e porte (es. 22,80,443 oppure 1-1024).</string>
+    <string name="tool_help_dns">Nome da risolvere (o IP per il reverse).</string>
+    <string name="tool_help_speed">URL di un file grande (download) e, opzionale, URL che accetta POST (upload). Usa un server nella LAN per misurare il Wi-Fi e non la linea internet.</string>
+    <string name="tool_help_wifi">Tutte le reti visibili con BSSID, canale, larghezza, segnale e vendor dell\'AP. Richiede scan throttling disattivato per aggiornamenti rapidi.</string>
+    <string name="tool_hint_host">Host o IP</string>
+    <string name="tool_hint_count">Pacchetti</string>
+    <string name="tool_hint_cidr">Subnet CIDR</string>
+    <string name="tool_hint_ports">Porte</string>
+    <string name="tool_hint_name">Nome host</string>
+    <string name="tool_hint_url">URL download</string>
+    <string name="tool_hint_url_up">URL upload (opz.)</string>
+    <string name="tool_big_subnet">Subnet grande (%1$d host): la scansione può richiedere diversi minuti.</string>
+    <string name="s_active_section">Survey attiva</string>
+    <string name="s_active">Ping durante la survey (latenza e perdita per punto)</string>
+    <string name="s_active_note">Richiede di essere connessi alla rete da misurare. Il telefono resta associato a un solo AP: le metriche attive riflettono quella connessione, incluso il roaming.</string>
+    <string name="s_ping_target">Host da pingare</string>
+    <string name="s_ping_target_hint">vuoto = gateway</string>
+    <string name="s_ping_probes">Pacchetti per scansione (1-10)</string>
+    <string name="s_latency_good">Latenza buona (ms)</string>
 </resources>

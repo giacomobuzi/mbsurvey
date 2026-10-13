@@ -41,12 +41,12 @@ jobs:
           gh issue create --title "Build failed: run ${{ github.run_number }}" --body-file errors.md || true
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk WiFiSurvey-1.0.${{ github.run_number }}.apk
+        run: cp app/build/outputs/apk/release/app-release.apk MBSurvey-1.0.${{ github.run_number }}.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: WiFiSurvey-apk
-          path: WiFiSurvey-*.apk
+          name: MBSurvey-apk
+          path: MBSurvey-*.apk
 
       - name: Publish release
         if: github.ref == 'refs/heads/main'
@@ -54,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="v1.0.${{ github.run_number }}"
-          gh release create "$TAG" WiFiSurvey-*.apk \
-            --title "WiFiSurvey $TAG" \
+          gh release create "$TAG" MBSurvey-*.apk \
+            --title "MB Survey $TAG" \
             --notes "Build automatica. Scarica l'APK e installalo sul telefono (consenti l'installazione da origini sconosciute)." \
             --latest
