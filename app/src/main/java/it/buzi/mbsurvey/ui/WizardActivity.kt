@@ -44,7 +44,7 @@ class WizardActivity : BaseActivity() {
     override fun onSupportNavigateUp(): Boolean { finish(); return true }
 
     override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
-        menu.add(0, 1, 0, R.string.edit_project).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IFROOM)
+        menu.add(0, 1, 0, R.string.edit_project).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return true
     }
 
