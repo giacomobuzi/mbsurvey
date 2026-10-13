@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
             s.pingProbes = intOf(b.pingProbes, s.pingProbes).coerceIn(1, 10)
             s.latencyGoodMs = intOf(b.latencyGood, s.latencyGoodMs).coerceIn(1, 5000)
             store.save(project)
-            Toast.makeText(this, "Impostazioni salvate", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.settings_saved), Toast.LENGTH_SHORT).show()
             finish()
         }
     }

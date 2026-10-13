@@ -6,7 +6,7 @@ MB Survey: app Android per site survey Wi-Fi passivi e attivi in stile Ekahau Su
 
 A ogni push su `main` il workflow `.github/workflows/build.yml` compila l'APK firmato e lo pubblica come **Release** del repository (`WiFiSurvey-1.0.N.apk`). Dal telefono: GitHub → Releases → scarica l'APK → installa (consenti "origini sconosciute").
 
-Il keystore in `keystore/wifisurvey.jks` (password `wifisurvey`) serve solo a firmare gli aggiornamenti in modo coerente: tienilo nel repo privato.
+Il keystore in `keystore/wifisurvey.jks` (password `wifisurvey`) serve solo a firmare gli aggiornamenti in modo coerente: resta nel repo privato.
 
 Compilazione locale: Android Studio o `./gradlew assembleRelease`.
 
@@ -31,7 +31,7 @@ Compilazione locale: Android Studio o `./gradlew assembleRelease`.
 
 ## Export Ekahau (.esx)
 
-Il file è uno ZIP di JSON con schema 1.8.0. `project.json`, `floorPlans.json`, `images.json`, immagini, `accessPoints.json` e i file di riferimento ricalcano un progetto reale di Ekahau AI Pro 11.5; `measuredRadios.json` e `accessPointMeasurements.json` seguono i nomi di campo usati dai tool pubblici. `surveys.json` (percorso e letture per punto) è una ricostruzione best-effort del formato Ekahau: va verificato aprendo il file in Ekahau; per finalizzarlo serve un `.esx` con una survey reale da cui ricavare la struttura esatta. Tutte le misure sono comunque incluse anche in `wifisurvey-measurements.json` dentro l'archivio.
+Il file è uno ZIP di JSON con schema 1.8.0. `project.json`, `floorPlans.json`, `images.json`, immagini e `accessPoints.json` seguono la struttura dei progetti Ekahau AI Pro 11.x; i file di riferimento (tipi di piano, muri, profili, requisiti) sono versioni minime proprie di MB Survey; `measuredRadios.json` e `accessPointMeasurements.json` seguono i nomi di campo usati dai tool pubblici. `surveys.json` (percorso e letture per punto) è una ricostruzione best-effort del formato Ekahau: va verificato aprendo il file in Ekahau; per finalizzarlo serve un `.esx` con una survey reale da cui ricavare la struttura esatta. Tutte le misure sono comunque incluse anche in `wifisurvey-measurements.json` dentro l'archivio.
 
 ## Struttura del codice
 
@@ -48,3 +48,7 @@ Il file è uno ZIP di JSON con schema 1.8.0. `project.json`, `floorPlans.json`, 
 - La scheda Wi-Fi di uno smartphone è meno accurata di un adattatore professionale: valori buoni per validazione e troubleshooting, non per collaudi certificati.
 - Planimetrie solo SVG in un .esx non vengono importate (serve la versione bitmap, che Ekahau include quasi sempre).
 - Niente spettro né rumore reale (limiti di Android).
+
+## Licenza
+
+Software proprietario, tutti i diritti riservati (vedi `LICENSE`). Non è open source: nessuna copia, modifica o redistribuzione senza autorizzazione scritta dell'autore. Componenti di terze parti inclusi: AndroidX, Material Components, Kotlin (Apache 2.0), font Inter (SIL OFL 1.1), tabella OUI IEEE via `oui-data` (MIT).

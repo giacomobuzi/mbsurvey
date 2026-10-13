@@ -168,6 +168,8 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
 
 <h2>Consigli</h2>
 <p>Tieni il telefono davanti a te, all\'altezza dei terminali che userà il cliente. Cammina a 1 m/s circa. Non coprire il telefono con la mano. Per confrontare due survey nello stesso progetto filtra per SSID. I valori di uno smartphone differiscono di alcuni dB da un adattatore professionale: usali per validazione e troubleshooting, non per collaudi certificati.</p>
+<h2>Note di terze parti</h2>
+<p>AndroidX, Material Components, Kotlin — Apache License 2.0. Font Inter — SIL Open Font License 1.1. Tabella vendor IEEE OUI via oui-data — MIT License.</p>
 ]]></string>
 
     <string name="wz_step_floor">Planimetria</string>
@@ -268,4 +270,101 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="s_ping_target_hint">vuoto = gateway</string>
     <string name="s_ping_probes">Pacchetti per scansione (1-10)</string>
     <string name="s_latency_good">Latenza buona (ms)</string>
+    <string name="mode_note">Note</string>
+    <string name="note_hint">Tocca la mappa per aggiungere una nota (o una nota esistente per modificarla)</string>
+    <string name="note_new">Nuova nota</string>
+    <string name="note_edit">Nota</string>
+    <string name="note_text_hint">Testo della nota (es. scaffale metallico, zona frigo, AP da spostare)</string>
+    <string name="note_photo">Scatta foto</string>
+    <string name="report_notes">Note e foto</string>
+    <string name="tool_channels">Canali</string>
+    <string name="tool_help_channels">Occupazione dei canali in tempo reale: ogni curva è un BSSID, larga quanto il canale e alta quanto il segnale.</string>
+    <string name="channels_project">Grafico canali (dalle misure)</string>
+    <string name="compare_title">Confronta due survey</string>
+    <string name="compare_pick_a">Survey di riferimento (prima)</string>
+    <string name="compare_pick_b">Survey da confrontare (dopo)</string>
+    <string name="compare_need_two">Servono almeno due survey su questo piano.</string>
+    <string name="compare_subtitle">Confronto: %1$s → %2$s</string>
+    <string name="compare_off">Confronto disattivato</string>
+    <string name="compare_legend">differenza dopo − prima (verde = migliorato)</string>
+    <string name="license_title">Licenza</string>
+    <string name="about_footer">MB Survey © 2026 Giacomo Buzi. Tutti i diritti riservati.</string>
+    <string name="report_footer">Generato con MB Survey © Giacomo Buzi · tutti i diritti riservati</string>
+
+    <!-- moved from code -->
+    <string name="exporting">Esportazione…</string>
+    <string name="importing">Importazione in corso…</string>
+    <string name="default_project">Progetto</string>
+    <string name="floor_read_error">Impossibile leggere la planimetria</string>
+    <string name="ap_unplaced">non posizionato</string>
+    <string name="default_floor">Piano %1$d</string>
+    <string name="default_floor_plain">Piano</string>
+    <string name="default_room">Stanza %1$d</string>
+    <string name="survey_other_floor">Survey in corso su un altro piano</string>
+    <string name="default_survey">Survey %1$d</string>
+    <string name="area_surveyed">Area rilevata: %1$.0f m²</string>
+    <string name="stat_min_avg_max">Min %1$.0f · Media %2$.1f · Max %3$.0f</string>
+    <string name="settings_saved">Impostazioni salvate</string>
+    <string name="default_esx_project">Progetto Ekahau</string>
+    <string name="esx_no_bitmap">Nessuna planimetria bitmap trovata nel file .esx (le planimetrie solo SVG non sono supportate)</string>
+    <string name="nt_error">Errore: %1$s</string>
+    <string name="nt_done">fine</string>
+    <string name="nt_bad_subnet">Subnet non valida</string>
+    <string name="nt_scanning">Scansione %1$s (%2$d host), porte %3$s</string>
+    <string name="nt_hosts_found">--- %1$d host attivi</string>
+    <string name="nt_bad_ports">Porte non valide</string>
+    <string name="nt_port_scan">Scansione porte su %1$s (%2$d porte)</string>
+    <string name="nt_open">aperta</string>
+    <string name="nt_ports_open">--- %1$d porte aperte</string>
+    <string name="nt_resolving">Risoluzione %1$s</string>
+    <string name="nt_download_from">Download da %1$s …</string>
+    <string name="nt_upload_to">Upload verso %1$s …</string>
+    <string name="nt_gw_latency">Latenza gateway</string>
+    <string name="nt_gw_latency_result">Latenza gateway: media %1$s ms, max %2$s ms, perdita %3$d %%</string>
+    <string name="nt_wifi_scanning">Scansione in corso… (aggiornamento continuo, premi Stop per fermare)</string>
+    <string name="nt_hidden">&lt;nascosto&gt;</string>
+    <string name="nt_networks">reti</string>
+    <string name="nt_ping_header">PING %1$s, %2$d pacchetti</string>
+    <string name="nt_ping_stats">--- %1$d inviati, %2$d ricevuti, perdita %3$d %%</string>
+    <string name="nt_ping_rtt">min %1$s / media %2$s / max %3$s ms · jitter %4$s ms</string>
+    <string name="nt_ping_gw_result">Ping gateway %1$s: %2$d/%3$d risposte, media %4$s ms, max %5$s ms</string>
+    <string name="nt_ping_inet_result">Ping internet (1.1.1.1): %1$d/%2$d risposte, media %3$s ms</string>
+    <string name="nt_lbl_signal">Segnale</string>
+    <string name="nt_lbl_band">Banda</string>
+    <string name="nt_lbl_public_ip">IP pubblico</string>
+    <string name="nt_lbl_channel">canale</string>
+    <string name="r_title">Report site survey Wi-Fi</string>
+    <string name="r_customer">Cliente: %1$s</string>
+    <string name="r_location">Sede: %1$s</string>
+    <string name="r_surveyor">Rilevatore: %1$s</string>
+    <string name="r_date">Data report: %1$s</string>
+    <string name="r_period">Rilevazioni: dal %1$s al %2$s</string>
+    <string name="r_summary">Sintesi</string>
+    <string name="r_col_floor">Piano</string>
+    <string name="r_method">Metodo</string>
+    <string name="r_col_vendor">Vendor / modello</string>
+    <string name="r_radios">Radio rilevate (BSSID)</string>
+    <string name="r_col_width">Larg.</string>
+    <string name="r_col_scans">Scansioni</string>
+    <string name="r_col_area">Area (m²)</string>
+    <string name="r_col_avg">Media</string>
+    <string name="r_col_samples">Campioni</string>
+    <string name="r_method_text">Survey passiva effettuata con smartphone Android (scheda Wi-Fi integrata). Il percorso è stato tracciato sulla planimetria e le posizioni delle scansioni sono interpolate sul tempo tra i punti toccati. I valori di segnale sono quelli misurati dalla scheda del telefono e possono differire di alcuni dB da un adattatore professionale. L\'SNR è stimato con un rumore di fondo di %1$d dBm perché Android non espone il livello di rumore. Le heatmap sono interpolate (IDW) con raggio %2$.1f m.</string>
+    <string name="r_thresholds">Soglie: buono ≥ %1$d dBm, sufficiente ≥ %2$d dBm, minimo utile %3$d dBm, conteggio AP con soglia %4$d dBm.</string>
+    <string name="r_cov_rssi">Copertura ≥ %1$d dBm: %2$.0f %% · ≥ %3$d dBm: %4$.0f %% · sotto %5$d dBm: %6$.0f %%</string>
+    <string name="r_cov_snr">Area con SNR ≥ 25 dB: %1$.0f %%</string>
+    <string name="r_cov_ap">Area con almeno 2 AP ≥ %1$d dBm: %2$.0f %%</string>
+    <string name="r_cov_int">Area senza sovrapposizioni di canale: %1$.0f %%</string>
+    <string name="r_cov_lat">Area con latenza ≤ %1$d ms: %2$.0f %% (ping verso %3$s)</string>
+    <string name="r_cov_loss">Area senza perdita di pacchetti: %1$.0f %%</string>
+    <string name="m_primary">Segnale primario</string>
+    <string name="m_secondary">Segnale secondario</string>
+    <string name="m_snr">SNR (rumore stimato)</string>
+    <string name="m_apcount">Numero di AP</string>
+    <string name="m_interference">Interferenza di canale</string>
+    <string name="m_latency">Latenza (survey attiva)</string>
+    <string name="m_loss">Perdita pacchetti (survey attiva)</string>
+    <string name="m_perap">Singolo AP / BSSID</string>
+    <string name="yes">sì</string>
+    <string name="no">no</string>
 </resources>

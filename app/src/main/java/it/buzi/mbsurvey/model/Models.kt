@@ -278,6 +278,27 @@ class Survey(
     }
 }
 
+/** A note pinned on a floor plan, optionally with a photo (file name under notes/). */
+class Note(
+    val id: String = newId(),
+    val floorId: String,
+    var x: Double,
+    var y: Double,
+    var text: String = "",
+    var photoFile: String? = null,
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    fun toJson(): JSONObject = JSONObject().put("id", id).put("floorId", floorId).put("x", x).put("y", y)
+        .put("text", text).put("photoFile", photoFile ?: JSONObject.NULL).put("createdAt", createdAt)
+
+    companion object {
+        fun fromJson(o: JSONObject) = Note(
+            o.getString("id"), o.getString("floorId"), o.getDouble("x"), o.getDouble("y"), o.optString("text", ""),
+            if (o.isNull("photoFile")) null else o.optString("photoFile"), o.optLong("createdAt")
+        )
+    }
+}
+
 class Project(
     val id: String = newId(),
     var name: String,
@@ -289,9 +310,11 @@ class Project(
     val floors: MutableList<Floor> = mutableListOf(),
     val accessPoints: MutableList<AccessPoint> = mutableListOf(),
     val surveys: MutableList<Survey> = mutableListOf(),
-    var settings: ProjectSettings = ProjectSettings()
+    var settings: ProjectSettings = ProjectSettings(),
+    val notes: MutableList<Note> = mutableListOf()
 ) {
     fun floor(id: String?): Floor? = floors.firstOrNull { it.id == id }
+    fun notesOf(floorId: String): List<Note> = notes.filter { it.floorId == floorId }
     fun surveysOf(floorId: String): List<Survey> = surveys.filter { it.floorId == floorId }
 
     /** Serialises everything except the survey data (which lives in separate files). */
@@ -299,6 +322,7 @@ class Project(
         val fl = JSONArray(); floors.forEach { fl.put(it.toJson()) }
         val aps = JSONArray(); accessPoints.forEach { aps.put(it.toJson()) }
         val sv = JSONArray(); surveys.forEach { sv.put(it.id) }
+        val nt = JSONArray(); notes.forEach { nt.put(it.toJson()) }
         return JSONObject()
             .put("format", "wifisurvey-project")
             .put("formatVersion", 1)
@@ -313,6 +337,7 @@ class Project(
             .put("accessPoints", aps)
             .put("surveyIds", sv)
             .put("settings", settings.toJson())
+            .put("notes", nt)
     }
 
     companion object {
@@ -331,6 +356,8 @@ class Project(
             for (i in 0 until fl.length()) p.floors.add(Floor.fromJson(fl.getJSONObject(i)))
             val aps = o.optJSONArray("accessPoints") ?: JSONArray()
             for (i in 0 until aps.length()) p.accessPoints.add(AccessPoint.fromJson(aps.getJSONObject(i)))
+            val nt = o.optJSONArray("notes") ?: JSONArray()
+            for (i in 0 until nt.length()) runCatching { Note.fromJson(nt.getJSONObject(i)) }.getOrNull()?.let { p.notes.add(it) }
             return p
         }
     }

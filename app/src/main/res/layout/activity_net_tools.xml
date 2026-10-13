@@ -37,6 +37,7 @@
             <com.google.android.material.chip.Chip android:id="@+id/chipPorts" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_ports" />
             <com.google.android.material.chip.Chip android:id="@+id/chipDns" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_dns" />
             <com.google.android.material.chip.Chip android:id="@+id/chipSpeed" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_speed" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipChannels" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_channels" />
             <com.google.android.material.chip.Chip android:id="@+id/chipWifi" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_wifi" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
@@ -93,6 +94,14 @@
             android:visibility="invisible"
             app:indicatorColor="@color/accent" />
     </LinearLayout>
+
+    <it.buzi.mbsurvey.ui.ChannelChartView
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/scroll"

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import it.buzi.mbsurvey.R
 import it.buzi.mbsurvey.data.ProjectStore
 import it.buzi.mbsurvey.model.AccessPoint
 import it.buzi.mbsurvey.model.ApSource
@@ -36,7 +37,7 @@ object EsxImporter {
         } ?: throw IllegalArgumentException("File non leggibile")
 
         val projectJson = File(tmp, "project.json").takeIf { it.exists() }?.let { JSONObject(it.readText()).optJSONObject("project") }
-        val name = projectJson?.optString("name")?.ifBlank { null } ?: "Progetto Ekahau"
+        val name = projectJson?.optString("name")?.ifBlank { null } ?: ctx.getString(R.string.default_esx_project)
         val project = Project(
             name = name,
             customer = projectJson?.optString("customer") ?: "",
@@ -62,7 +63,7 @@ object EsxImporter {
                     break
                 }
                 if (bmp == null) continue // SVG only: cannot render without a bitmap rendition
-                val floor = store.addFloor(project, fp.optString("name", "Piano ${i + 1}"), bmp)
+                val floor = store.addFloor(project, fp.optString("name", ctx.getString(R.string.default_floor, i + 1)), bmp)
                 // Ekahau coordinates are in floor-plan units (its declared width/height). Our pixels may
                 // differ (bitmap rendition / downscale), so keep a scale factor and convert the AP positions.
                 val unitToPx = if (w > 0) floor.widthPx / w else 1.0
@@ -117,7 +118,7 @@ object EsxImporter {
         }
         scaleByFloor.clear()
         tmp.deleteRecursively()
-        if (project.floors.isEmpty()) throw IllegalArgumentException("Nessuna planimetria bitmap trovata nel file .esx (le planimetrie solo SVG non sono supportate)")
+        if (project.floors.isEmpty()) throw IllegalArgumentException(ctx.getString(R.string.esx_no_bitmap))
         store.save(project)
         return project
     }

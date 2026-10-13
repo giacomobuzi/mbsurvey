@@ -31,6 +31,7 @@ import it.buzi.mbsurvey.model.ApSource
 import it.buzi.mbsurvey.model.Band
 import it.buzi.mbsurvey.model.Calibration
 import it.buzi.mbsurvey.model.Floor
+import it.buzi.mbsurvey.model.Note
 import it.buzi.mbsurvey.model.Project
 import it.buzi.mbsurvey.model.SurveyMode
 import it.buzi.mbsurvey.survey.RecordingSession
@@ -50,7 +51,7 @@ class FloorActivity : AppCompatActivity() {
         const val EXTRA_FLOOR = "floorId"
     }
 
-    private enum class Mode { SURVEY, CALIBRATE, AP }
+    private enum class Mode { SURVEY, CALIBRATE, AP, NOTE }
 
     private lateinit var b: ActivityFloorBinding
     private lateinit var store: ProjectStore
@@ -67,6 +68,8 @@ class FloorActivity : AppCompatActivity() {
     private var ssids: List<String> = emptyList()
     private var bssidChoices: List<Pair<String, String>> = emptyList() // (bssid, label)
     private var perApMode = false
+    private var compareA: String? = null
+    private var compareB: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +101,7 @@ class FloorActivity : AppCompatActivity() {
             mode = when (checkedId) {
                 b.modeCalibrate.id -> Mode.CALIBRATE
                 b.modeAp.id -> Mode.AP
+                b.modeNote.id -> Mode.NOTE
                 else -> Mode.SURVEY
             }
             calibPoints.clear()
@@ -116,7 +120,7 @@ class FloorActivity : AppCompatActivity() {
     // ---------------- spinners / heatmap ----------------
 
     private fun setupSpinners() {
-        val metricLabels = metrics.map { it.label } + listOf(getString(R.string.heatmap_none), Metric.PER_AP.label)
+        val metricLabels = metrics.map { it.label(this) } + listOf(getString(R.string.heatmap_none), Metric.PER_AP.label(this))
         b.metricSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, metricLabels)
         b.bandSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
             listOf(getString(R.string.filter_all_bands), Band.B24.label, Band.B5.label, Band.B6.label))
@@ -160,7 +164,7 @@ class FloorActivity : AppCompatActivity() {
         }
         val si = b.ssidSpinner.selectedItemPosition
         val ssid = if (si <= 0) null else ssids.getOrNull(si - 1)
-        return HeatmapFilter(metrics[mi], ssid, band, null)
+        return HeatmapFilter(metrics[mi], ssid, band, null, null, compareA, compareB)
     }
 
     private fun scheduleHeatmap(force: Boolean = false) {
@@ -182,6 +186,7 @@ class FloorActivity : AppCompatActivity() {
         b.plan.surveys = project.surveysOf(floor.id).filter { it !== RecordingSession.survey }
         b.plan.liveWaypoints = RecordingSession.survey?.takeIf { it.floorId == floor.id }?.waypoints?.map { PointF(it.x.toFloat(), it.y.toFloat()) } ?: emptyList()
         b.plan.accessPoints = project.accessPoints.filter { it.floorId == floor.id }
+        b.plan.notes = project.notesOf(floor.id)
     }
 
     // ---------------- observers ----------------
@@ -238,6 +243,7 @@ class FloorActivity : AppCompatActivity() {
         val text: String? = when (mode) {
             Mode.CALIBRATE -> if (calibPoints.isEmpty()) getString(R.string.calib_first) else getString(R.string.calib_second)
             Mode.AP -> getString(R.string.ap_place)
+            Mode.NOTE -> getString(R.string.note_hint)
             Mode.SURVEY -> when {
                 s == null || s.floorId != floor.id -> null
                 s.mode == SurveyMode.CONTINUOUS -> if (s.waypoints.isEmpty()) getString(R.string.tap_start_point) else getString(R.string.tap_next_point)
@@ -273,6 +279,70 @@ class FloorActivity : AppCompatActivity() {
                 updateHint()
             }
             Mode.AP -> placeAp(x, y)
+            Mode.NOTE -> {
+                val existing = b.plan.noteAt(x, y)
+                if (existing != null) editNote(existing) else editNote(Note(floorId = floor.id, x = x, y = y), isNew = true)
+            }
+        }
+    }
+
+    // ---------------- notes ----------------
+
+    private var photoTarget: Note? = null
+    private var photoTmp: java.io.File? = null
+    private val takePhoto = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.TakePicture()) { ok ->
+        val n = photoTarget; val f = photoTmp
+        if (ok && n != null && f != null && f.exists()) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    // downscale to 1600 px and store as JPEG
+                    val opts = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    android.graphics.BitmapFactory.decodeFile(f.absolutePath, opts)
+                    var sample = 1
+                    while (maxOf(opts.outWidth, opts.outHeight) / sample > 1600) sample *= 2
+                    val bmp = android.graphics.BitmapFactory.decodeFile(f.absolutePath, android.graphics.BitmapFactory.Options().apply { inSampleSize = sample })
+                    val name = "${n.id}.jpg"
+                    store.notePhotoFile(project.id, name).outputStream().use { bmp?.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }
+                    f.delete()
+                    n.photoFile = name
+                    if (project.notes.none { it.id == n.id }) project.notes.add(n)
+                    store.save(project)
+                }
+                refreshOverlays()
+                editNote(n)
+            }
+        }
+    }
+
+    private fun editNote(n: Note, isNew: Boolean = false) {
+        val d = it.buzi.mbsurvey.databinding.DialogNoteBinding.inflate(layoutInflater)
+        d.text.setText(n.text)
+        val photo = n.photoFile?.let { store.notePhotoFile(project.id, it) }
+        if (photo != null && photo.exists()) {
+            d.photo.visibility = View.VISIBLE
+            d.photo.setImageBitmap(store.loadFloorBitmapFile(photo, 800))
+        } else d.photo.visibility = View.GONE
+        val dlg = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(if (isNew) R.string.note_new else R.string.note_edit)
+            .setView(d.root)
+            .setPositiveButton(R.string.save) { _, _ ->
+                n.text = d.text.text.toString().trim()
+                if (project.notes.none { it.id == n.id }) project.notes.add(n)
+                store.save(project); refreshOverlays()
+            }
+            .setNegativeButton(R.string.cancel, null)
+        if (!isNew) dlg.setNeutralButton(R.string.delete) { _, _ ->
+            project.notes.removeAll { it.id == n.id }; store.save(project); refreshOverlays()
+        }
+        val shown = dlg.show()
+        d.photoBtn.setOnClickListener {
+            n.text = d.text.text.toString().trim()
+            photoTarget = n
+            val tmp = java.io.File(cacheDir, "exports/photo-${n.id}.jpg").apply { parentFile?.mkdirs() }
+            photoTmp = tmp
+            val uri = androidx.core.content.FileProvider.getUriForFile(this, "$packageName.files", tmp)
+            shown.dismiss()
+            runCatching { takePhoto.launch(uri) }.onFailure { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
         }
     }
 
@@ -322,7 +392,7 @@ class FloorActivity : AppCompatActivity() {
         val s = RecordingSession.survey
         if (s != null) {
             if (s.floorId != floor.id) {
-                Toast.makeText(this, "Survey in corso su un altro piano", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.survey_other_floor), Toast.LENGTH_SHORT).show()
                 return
             }
             val kept = RecordingSession.stop(this)
@@ -338,13 +408,13 @@ class FloorActivity : AppCompatActivity() {
         }
         if (!preflight()) return
         val d = DialogSurveyStartBinding.inflate(layoutInflater)
-        d.name.setText("Survey ${project.surveysOf(floor.id).size + 1}")
+        d.name.setText(getString(R.string.default_survey, project.surveysOf(floor.id).size + 1))
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.start_survey)
             .setView(d.root)
             .setPositiveButton(R.string.ok) { _, _ ->
                 val m = if (d.modeStopGo.isChecked) SurveyMode.STOP_AND_GO else SurveyMode.CONTINUOUS
-                RecordingSession.start(this, store, project, floor.id, d.name.text.toString().trim().ifBlank { "Survey" }, m)
+                RecordingSession.start(this, store, project, floor.id, d.name.text.toString().trim().ifBlank { getString(R.string.surveys) }, m)
                 b.modeGroup.check(b.modeSurvey.id)
                 updateRecordButton()
                 updateHint()
@@ -394,13 +464,36 @@ class FloorActivity : AppCompatActivity() {
             android.R.id.home -> finish()
             R.id.action_show_path -> { item.isChecked = !item.isChecked; b.plan.showPath = item.isChecked }
             R.id.action_show_aps -> { item.isChecked = !item.isChecked; b.plan.showAps = item.isChecked }
+            R.id.action_show_notes -> { item.isChecked = !item.isChecked; b.plan.showNotes = item.isChecked }
             R.id.action_legend -> showLegend()
+            R.id.action_compare -> chooseCompare()
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)
             R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             R.id.action_tools -> startActivity(Intent(this, NetToolsActivity::class.java))
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun chooseCompare() {
+        if (compareA != null) {
+            compareA = null; compareB = null
+            supportActionBar?.subtitle = project.name
+            scheduleHeatmap(force = true)
+            Toast.makeText(this, R.string.compare_off, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val surveys = project.surveysOf(floor.id).filter { it.locatedScans.isNotEmpty() }
+        if (surveys.size < 2) { Toast.makeText(this, R.string.compare_need_two, Toast.LENGTH_LONG).show(); return }
+        val names = surveys.map { it.name }.toTypedArray()
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle(R.string.compare_pick_a).setItems(names) { _, ia ->
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle(R.string.compare_pick_b).setItems(names) { _, ib ->
+                if (ia == ib) return@setItems
+                compareA = surveys[ia].id; compareB = surveys[ib].id
+                supportActionBar?.subtitle = getString(R.string.compare_subtitle, surveys[ia].name, surveys[ib].name)
+                scheduleHeatmap(force = true)
+            }.show()
+        }.show()
     }
 
     private fun showLegend() {
@@ -410,11 +503,13 @@ class FloorActivity : AppCompatActivity() {
         if (f == null || res == null) {
             sb.append(getString(R.string.heatmap_none))
         } else {
-            sb.append(f.metric.label).append(" (").append(f.metric.unit).append(")\n")
+            sb.append(f.metric.label(this)).append(" (").append(f.metric.unit).append(")")
+            if (f.isCompare) sb.append(" · ").append(getString(R.string.compare_legend))
+            sb.append("\n")
             res.legend.forEach { (v, _) -> sb.append("  ").append(v.toInt()).append(" ").append(f.metric.unit).append("\n") }
-            sb.append("\nMin ${"%.0f".format(res.min)} · Media ${"%.1f".format(res.avg)} · Max ${"%.0f".format(res.max)}\n")
+            sb.append("\n" + getString(R.string.stat_min_avg_max, res.min, res.avg, res.max) + "\n")
             val area = Heatmap.coveredAreaM2(res, floor)
-            if (area > 0) sb.append("Area rilevata: ${"%.0f".format(area)} m²\n")
+            if (area > 0) sb.append(getString(R.string.area_surveyed, area) + "\n")
             if (f.metric == Metric.PRIMARY_RSSI || f.metric == Metric.SECONDARY_RSSI || f.metric == Metric.PER_AP) {
                 val good = Heatmap.coverageShare(res, f.metric, project.settings.rssiGood.toFloat()) * 100
                 val ok = Heatmap.coverageShare(res, f.metric, project.settings.rssiOk.toFloat()) * 100

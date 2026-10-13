@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MB Survey</string>
+    <string name="notif_channel">Wi-Fi scanning</string>
+    <string name="notif_scanning">Wi-Fi scan in progress</string>
+    <string name="notif_last_scan">Last scan: %1$d networks</string>
+    <string name="stop">Stop</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="name">Name</string>
+
+    <string name="projects_title">Projects</string>
+    <string name="projects_empty">No projects yet. Create one or import an Ekahau .esx file.</string>
+    <string name="new_project">New project</string>
+    <string name="import_esx">Import .esx (Ekahau)</string>
+    <string name="import_json">Import project backup (.zip)</string>
+    <string name="project_name_hint">Project name</string>
+    <string name="customer_hint">Customer</string>
+    <string name="location_hint">Site</string>
+    <string name="surveyor_hint">Surveyor</string>
+    <string name="delete_project_confirm">Delete project \"%1$s\" with all its surveys?</string>
+    <string name="project_summary">%1$d floors · %2$d surveys · %3$d APs</string>
+
+    <string name="floors">Floors</string>
+    <string name="surveys">Surveys</string>
+    <string name="access_points">Access points</string>
+    <string name="add_floor">Add floor</string>
+    <string name="add_floor_image">From image</string>
+    <string name="add_floor_pdf">From PDF (first page)</string>
+    <string name="floor_name_hint">Floor name</string>
+    <string name="floors_empty">No floors. Add a floor plan.</string>
+    <string name="surveys_empty">No surveys. Open a floor and start recording.</string>
+    <string name="aps_empty">No access points detected.</string>
+    <string name="floor_calibrated">Scale: %1$.1f m × %2$.1f m</string>
+    <string name="floor_not_calibrated">Not calibrated</string>
+    <string name="survey_summary">%1$s · %2$d scans · %3$d points</string>
+    <string name="ap_summary">%1$s · %2$d BSSIDs</string>
+    <string name="export">Export</string>
+    <string name="export_csv">CSV measurements</string>
+    <string name="export_json">Project backup (.zip)</string>
+    <string name="export_png">Heatmap PNGs</string>
+    <string name="export_pdf">PDF report</string>
+    <string name="export_esx">Ekahau .esx</string>
+    <string name="settings">Settings</string>
+    <string name="edit_project">Project details</string>
+    <string name="sync_aps">Update APs from measurements</string>
+    <string name="export_done">Export ready: %1$s</string>
+    <string name="export_error">Export error: %1$s</string>
+    <string name="ap_mine">Mine</string>
+    <string name="ap_vendor_hint">Vendor</string>
+    <string name="ap_model_hint">Model</string>
+    <string name="delete_survey_confirm">Delete survey \"%1$s\"?</string>
+    <string name="delete_floor_confirm">Delete floor \"%1$s\" and its surveys?</string>
+
+    <string name="mode_survey">Survey</string>
+    <string name="mode_calibrate">Calibrate</string>
+    <string name="mode_ap">AP</string>
+    <string name="start_survey">Start survey</string>
+    <string name="stop_survey">Stop survey</string>
+    <string name="survey_continuous">Continuous (tap → walk → tap)</string>
+    <string name="survey_stop_and_go">Stop-and-go (tap and stand still)</string>
+    <string name="survey_name_hint">Survey name</string>
+    <string name="tap_start_point">Tap the map where you are standing</string>
+    <string name="tap_next_point">Walk in a straight line and tap the point you reached</string>
+    <string name="stop_go_collecting">Hold still: collecting %1$d/%2$d scans…</string>
+    <string name="stop_go_next">Move and tap the next point</string>
+    <string name="calib_first">Calibration: tap the first reference point</string>
+    <string name="calib_second">Tap the second reference point</string>
+    <string name="calib_distance">Real distance between the two points (metres)</string>
+    <string name="calib_done">Calibrated: %1$.3f m/px</string>
+    <string name="ap_place">Tap where the AP is located</string>
+    <string name="ap_choose">Choose the AP to place</string>
+    <string name="ap_new">New AP…</string>
+    <string name="heatmap_none">No heatmap</string>
+    <string name="heatmap_metric">Metric</string>
+    <string name="filter_all_ssid">All SSIDs</string>
+    <string name="filter_all_bands">All bands</string>
+    <string name="status_idle">Scanner stopped</string>
+    <string name="status_scanning">Scans: %1$d · last: %2$d networks · max %3$d dBm</string>
+    <string name="status_throttled">WARNING: Wi-Fi scan throttling is on. Disable it in Developer options.</string>
+    <string name="status_stale">Stale results: %1$d (throttling?)</string>
+    <string name="not_calibrated_warn">Floor not calibrated: set the scale before surveying.</string>
+    <string name="perm_needed">Location and Wi-Fi permissions are required for scanning.</string>
+    <string name="location_off">Turn on location: Android requires it for Wi-Fi scanning.</string>
+    <string name="wifi_off">Wi-Fi is off.</string>
+    <string name="undo_point">Undo last point</string>
+    <string name="legend">Legend</string>
+    <string name="show_path">Path</string>
+    <string name="show_aps">APs</string>
+    <string name="opacity">Opacity</string>
+    <string name="survey_saved">Survey saved: %1$d located scans</string>
+    <string name="survey_discarded">Empty survey discarded</string>
+    <string name="throttle_help_title">Scan throttling</string>
+    <string name="throttle_help">Android limits Wi-Fi scans to 4 every 2 minutes. For a survey you must disable the limit:\n\n1. Settings → About phone → tap \"Build number\" 7 times\n2. Settings → System → Developer options\n3. Turn off \"Wi-Fi scan throttling\"\n\nThen come back here.</string>
+    <string name="open_dev_settings">Open Developer options</string>
+
+    <string name="settings_title">Project settings</string>
+    <string name="s_interval">Scan interval (ms)</string>
+    <string name="s_stopgo">Scans per point (stop-and-go)</string>
+    <string name="s_radius">Heatmap interpolation radius (m)</string>
+    <string name="s_good">Good signal threshold (dBm)</string>
+    <string name="s_ok">Acceptable signal threshold (dBm)</string>
+    <string name="s_min">Minimum usable signal (dBm)</string>
+    <string name="s_apcount">AP count threshold (dBm)</string>
+    <string name="s_noise">Estimated noise floor for SNR (dBm)</string>
+    <string name="s_note">Android does not expose the noise level: SNR is computed with the noise floor set here. Thresholds colour the heatmaps and the report.</string>
+
+    <string name="export_title">Export</string>
+    <string name="export_saved_share">File ready. Share or save it.</string>
+
+    <string name="help_title">User guide</string>
+    <string name="wizard_title">Guided procedure</string>
+    <string name="wizard_open">Guided procedure</string>
+    <string name="help_html"><![CDATA[
+<h2>How it works</h2>
+<p>MB Survey records every Wi-Fi network your phone can see while you walk, and ties each reading to the position you mark on the floor plan. From these readings it builds heatmaps and the report, and exports files for Ekahau and other tools.</p>
+
+<h2>Before you start</h2>
+<p>1. Grant <b>location</b>, <b>nearby Wi-Fi devices</b> and <b>notification</b> permissions (Android requires them to read networks).<br/>
+2. Turn on <b>location</b>.<br/>
+3. Disable <b>Wi-Fi scan throttling</b>: Settings → About phone → tap "Build number" 7 times → Developer options → "Wi-Fi scan throttling" OFF. Otherwise Android allows only 4 scans every 2 minutes and the survey is useless. A red banner shows while it is on.</p>
+
+<h2>1. Project</h2>
+<p>Create a project (customer, site, surveyor) or use <b>Import .esx</b> to load an existing Ekahau project: floor plans, scale and planned access points are imported so you can validate the design on site.</p>
+
+<h2>2. Floor plan</h2>
+<p><b>Add floor</b> → <b>Draw floor plan</b> to draw it on the phone: set the size in metres, add rooms and areas (with names), walls and racking, tap an edge to add a door. The scale is calibrated automatically. Or load an image (JPG/PNG) or a PDF; a photo of a sketch works too. One floor per level.</p>
+
+<h2>3. Calibration</h2>
+<p>Open the floor, choose <b>Calibrate</b>, tap two points at a known distance (a wall, a bay between columns, a door) and enter the metres. Needed for m² areas, heatmap radius and the Ekahau scale. The longer the reference distance, the better.</p>
+
+<h2>4. Survey</h2>
+<p>In <b>Survey</b> mode press the red button, name it and choose:<br/>
+• <b>Continuous</b>: tap exactly where you stand, walk in a straight line at a steady pace, tap the point you reached when you turn or stop, and so on. Scans taken along the leg are spread by time: do not stop mid-leg and do not change direction without tapping.<br/>
+• <b>Stop-and-go</b>: tap the point, stand still until the app collects the configured scans, move and tap the next point. Slower but more accurate: good for narrow aisles.<br/>
+The bottom box shows scans taken and networks seen: it must grow every 2–3 seconds. <b>Undo</b> removes the last point. Press the button again to finish: the survey is saved in the project. In a warehouse walk every aisle, both ways if the racks are tall.</p>
+
+<h2>5. Heatmaps</h2>
+<p>Use the three menus at the top to choose metric, SSID and band. Metrics: primary signal (strongest AP), secondary (roaming redundancy), estimated SNR, number of APs above threshold, channel interference, latency and packet loss (active survey), single BSSID. Menu ⋮ → <b>Legend</b> for scales, min/avg/max, surveyed area and coverage percentages. Thresholds are in Settings.</p>
+
+<h2>6. Access points</h2>
+<p><b>Update APs from measurements</b> creates one AP per group of detected BSSIDs, placed by the strongest samples. In <b>AP</b> mode tap the map where an AP really is. In the AP card rename it, add vendor/model and mark yours (the others are neighbouring networks).</p>
+
+<h2>7. Export</h2>
+<p>Project menu → <b>Export</b>:<br/>
+• <b>PDF report</b>: summary, heatmaps per floor with statistics, notes, AP and BSSID tables.<br/>
+• <b>CSV</b>: one row per reading (time, position in px and metres, BSSID, SSID, dBm, channel, latency), for Excel or other tools.<br/>
+• <b>Ekahau .esx</b>: project openable in Ekahau AI Pro (File → Open Project) with floor plans, scale, APs and detected radios; surveys are included on a best-effort basis.<br/>
+• <b>PNG</b>: heatmaps as images.<br/>
+• <b>Backup .zip</b>: full project, importable on another phone.<br/>
+Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
+
+<h2>Active survey</h2>
+<p>In Settings → <b>Active survey</b> the app pings the gateway (or a host of your choice) after every scan and records latency and packet loss per point. Two more heatmaps and two report pages appear. You must be connected to the customer\'s network.</p>
+
+<h2>Network tools</h2>
+<p>From the wrench icon: connection status (SSID, BSSID, channel, link rate, IP, gateway, DNS, public IP), ping with jitter, traceroute, subnet scan with MAC and vendor (for another VLAN enter its subnet: it must be reachable through the gateway), port scan, DNS, HTTP speed test (best with a LAN server), channel chart and the full list of Wi-Fi networks with AP vendor. Every result can be shared as text.</p>
+
+<h2>Tips</h2>
+<p>Hold the phone in front of you at the height of the devices the customer will use. Walk at about 1 m/s. Do not cover the phone with your hand. To compare two surveys in the same project filter by SSID or use "Compare two surveys". Smartphone readings differ by a few dB from a professional adapter: use them for validation and troubleshooting, not for certified acceptance tests.</p>
+
+<h2>Third-party notices</h2>
+<p>AndroidX, Material Components, Kotlin — Apache License 2.0. Inter font — SIL Open Font License 1.1. IEEE OUI vendor table via oui-data — MIT License.</p>
+]]></string>
+
+    <string name="wz_step_floor">Floor plan</string>
+    <string name="wz_step_calib">Calibration</string>
+    <string name="wz_step_prep">Phone ready</string>
+    <string name="wz_step_survey">Survey</string>
+    <string name="wz_step_aps">Access points</string>
+    <string name="wz_step_export">Export</string>
+    <string name="wz_done">Done</string>
+    <string name="wz_todo">To do</string>
+    <string name="wz_floor_desc">Load the warehouse floor plan from an image or PDF, or draw it. One floor per level.</string>
+    <string name="wz_floor_status">%1$d floors loaded</string>
+    <string name="wz_calib_desc">Tap two points at a known distance and enter the metres. Without a scale, areas and the Ekahau file are wrong.</string>
+    <string name="wz_calib_status">%1$d of %2$d floors calibrated</string>
+    <string name="wz_prep_desc">Permissions granted, location on, Wi-Fi on and scan throttling disabled.</string>
+    <string name="wz_prep_ok">All good</string>
+    <string name="wz_prep_ko">To fix: %1$s</string>
+    <string name="wz_survey_desc">Open the floor, press the red button and walk every aisle, tapping the map at each change of direction.</string>
+    <string name="wz_survey_status">%1$d surveys, %2$d located scans</string>
+    <string name="wz_aps_desc">Create APs from the detected BSSIDs, rename them and mark the customer\'s ones.</string>
+    <string name="wz_aps_status">%1$d APs, %2$d mine</string>
+    <string name="wz_export_desc">PDF report for the customer, CSV for analysis, .esx to continue the design in Ekahau.</string>
+    <string name="wz_export_status">Ready to export</string>
+    <string name="wz_open_floor">Open floor</string>
+    <string name="wz_add_floor">Add floor</string>
+    <string name="wz_check">Check</string>
+    <string name="wz_prep_perm">permissions</string>
+    <string name="wz_prep_loc">location</string>
+    <string name="wz_prep_wifi">Wi-Fi</string>
+    <string name="wz_prep_throttle">scan throttling</string>
+
+    <string name="add_floor_draw">Draw floor plan</string>
+    <string name="edit_drawing">Edit drawing</string>
+    <string name="pe_title">Draw floor plan</string>
+    <string name="pe_tool_select">Select</string>
+    <string name="pe_tool_room">Room</string>
+    <string name="pe_tool_wall">Wall</string>
+    <string name="pe_tool_door">Door</string>
+    <string name="pe_size">Size</string>
+    <string name="pe_undo">Undo</string>
+    <string name="pe_size_help">Overall floor size in metres. You can change it later.</string>
+    <string name="pe_width_m">Width (m)</string>
+    <string name="pe_height_m">Depth (m)</string>
+    <string name="pe_hint_select">Tap an element to select it, drag to move it, drag the corners to resize. Double-tap a room to rename it. Two fingers to zoom.</string>
+    <string name="pe_hint_room">Drag on the floor to draw a room or an area (warehouse, offices, aisle).</string>
+    <string name="pe_hint_wall">Drag to draw a wall or a rack. It snaps to horizontal or vertical.</string>
+    <string name="pe_hint_door">Tap a wall or a room edge to insert a door.</string>
+    <string name="pe_room_name">Room name</string>
+    <string name="pe_room_name_hint">e.g. Shipping warehouse</string>
+    <string name="pe_save">Save floor plan</string>
+    <string name="pe_saved">Floor plan saved and calibrated automatically</string>
+    <string name="pe_discard">Leave without saving changes?</string>
+    <string name="pe_floor_name">Floor name</string>
+    <string name="pe_empty">Draw at least one room or wall before saving.</string>
+    <string name="pe_add_room">+ Room</string>
+    <string name="pe_add_wall">+ Wall</string>
+    <string name="pe_edit">Edit</string>
+    <string name="pe_dims">Dimensions</string>
+    <string name="pe_door_width">Door width (m)</string>
+    <string name="pe_total_area">Rooms: %1$d · %2$.0f m²</string>
+    <string name="pe_hint_select2">Tap an element to select it, drag to move it, use the handles to resize. + Room and + Wall add elements at the centre. Double-tap: rename room or door width.</string>
+    <string name="duplicate_floor">Duplicate drawing as new floor</string>
+
+    <string name="tools_title">Network tools</string>
+    <string name="tool_info">Connection</string>
+    <string name="tool_ping">Ping</string>
+    <string name="tool_trace">Traceroute</string>
+    <string name="tool_scan">Network scan</string>
+    <string name="tool_ports">Ports</string>
+    <string name="tool_dns">DNS</string>
+    <string name="tool_speed">Speed</string>
+    <string name="tool_wifi">Wi-Fi networks</string>
+    <string name="tool_run">Run</string>
+    <string name="tool_stop">Stop</string>
+    <string name="tool_share">Share result</string>
+    <string name="tool_help_info">Current Wi-Fi connection: network, channel, link speed, IP, gateway, DNS.</string>
+    <string name="tool_help_ping">Host or IP and packet count. Measures latency, jitter and loss.</string>
+    <string name="tool_help_trace">Host or IP. Shows the packet path hop by hop.</string>
+    <string name="tool_help_scan">Subnet in CIDR form (e.g. 192.168.10.0/24). To scan another VLAN enter its subnet: the phone must reach it through the gateway. Probe ports comma-separated.</string>
+    <string name="tool_help_ports">IP and ports (e.g. 22,80,443 or 1-1024).</string>
+    <string name="tool_help_dns">Name to resolve (or IP for reverse lookup).</string>
+    <string name="tool_help_speed">URL of a large file (download) and, optionally, a URL accepting POST (upload). Use a LAN server to measure the Wi-Fi rather than the internet line.</string>
+    <string name="tool_help_wifi">All visible networks with BSSID, channel, width, signal and AP vendor. Needs scan throttling disabled for fast updates.</string>
+    <string name="tool_hint_host">Host or IP</string>
+    <string name="tool_hint_count">Packets</string>
+    <string name="tool_hint_cidr">Subnet CIDR</string>
+    <string name="tool_hint_ports">Ports</string>
+    <string name="tool_hint_name">Host name</string>
+    <string name="tool_hint_url">Download URL</string>
+    <string name="tool_hint_url_up">Upload URL (opt.)</string>
+    <string name="tool_big_subnet">Large subnet (%1$d hosts): the scan may take several minutes.</string>
+    <string name="s_active_section">Active survey</string>
+    <string name="s_active">Ping during survey (latency and loss per point)</string>
+    <string name="s_active_note">Requires being connected to the network under test. The phone stays associated with one AP: active metrics reflect that connection, including roaming.</string>
+    <string name="s_ping_target">Host to ping</string>
+    <string name="s_ping_target_hint">empty = gateway</string>
+    <string name="s_ping_probes">Packets per scan (1-10)</string>
+    <string name="s_latency_good">Good latency (ms)</string>
+    <string name="mode_note">Notes</string>
+    <string name="note_hint">Tap the map to add a note (or an existing note to edit it)</string>
+    <string name="note_new">New note</string>
+    <string name="note_edit">Note</string>
+    <string name="note_text_hint">Note text (e.g. metal rack, cold room, AP to move)</string>
+    <string name="note_photo">Take photo</string>
+    <string name="report_notes">Notes and photos</string>
+    <string name="tool_channels">Channels</string>
+    <string name="tool_help_channels">Live channel occupancy: each curve is a BSSID, as wide as its channel and as tall as its signal.</string>
+    <string name="channels_project">Channel chart (from measurements)</string>
+    <string name="compare_title">Compare two surveys</string>
+    <string name="compare_pick_a">Reference survey (before)</string>
+    <string name="compare_pick_b">Survey to compare (after)</string>
+    <string name="compare_need_two">At least two surveys on this floor are needed.</string>
+    <string name="compare_subtitle">Comparison: %1$s → %2$s</string>
+    <string name="compare_off">Comparison off</string>
+    <string name="compare_legend">difference after − before (green = improved)</string>
+    <string name="license_title">License</string>
+    <string name="about_footer">MB Survey © 2026 Giacomo Buzi. All rights reserved.</string>
+    <string name="report_footer">Generated with MB Survey © Giacomo Buzi · all rights reserved</string>
+
+    <string name="exporting">Exporting…</string>
+    <string name="importing">Importing…</string>
+    <string name="default_project">Project</string>
+    <string name="floor_read_error">Cannot read the floor plan</string>
+    <string name="ap_unplaced">not placed</string>
+    <string name="default_floor">Floor %1$d</string>
+    <string name="default_floor_plain">Floor</string>
+    <string name="default_room">Room %1$d</string>
+    <string name="survey_other_floor">A survey is running on another floor</string>
+    <string name="default_survey">Survey %1$d</string>
+    <string name="area_surveyed">Surveyed area: %1$.0f m²</string>
+    <string name="stat_min_avg_max">Min %1$.0f · Avg %2$.1f · Max %3$.0f</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="default_esx_project">Ekahau project</string>
+    <string name="esx_no_bitmap">No bitmap floor plan found in the .esx file (SVG-only floor plans are not supported)</string>
+    <string name="nt_error">Error: %1$s</string>
+    <string name="nt_done">done</string>
+    <string name="nt_bad_subnet">Invalid subnet</string>
+    <string name="nt_scanning">Scanning %1$s (%2$d hosts), ports %3$s</string>
+    <string name="nt_hosts_found">--- %1$d hosts up</string>
+    <string name="nt_bad_ports">Invalid ports</string>
+    <string name="nt_port_scan">Port scan on %1$s (%2$d ports)</string>
+    <string name="nt_open">open</string>
+    <string name="nt_ports_open">--- %1$d open ports</string>
+    <string name="nt_resolving">Resolving %1$s</string>
+    <string name="nt_download_from">Download from %1$s …</string>
+    <string name="nt_upload_to">Upload to %1$s …</string>
+    <string name="nt_gw_latency">Gateway latency</string>
+    <string name="nt_gw_latency_result">Gateway latency: avg %1$s ms, max %2$s ms, loss %3$d %%</string>
+    <string name="nt_wifi_scanning">Scanning… (continuous update, press Stop to end)</string>
+    <string name="nt_hidden">&lt;hidden&gt;</string>
+    <string name="nt_networks">networks</string>
+    <string name="nt_ping_header">PING %1$s, %2$d packets</string>
+    <string name="nt_ping_stats">--- %1$d sent, %2$d received, loss %3$d %%</string>
+    <string name="nt_ping_rtt">min %1$s / avg %2$s / max %3$s ms · jitter %4$s ms</string>
+    <string name="nt_ping_gw_result">Ping gateway %1$s: %2$d/%3$d replies, avg %4$s ms, max %5$s ms</string>
+    <string name="nt_ping_inet_result">Ping internet (1.1.1.1): %1$d/%2$d replies, avg %3$s ms</string>
+    <string name="nt_lbl_signal">Signal</string>
+    <string name="nt_lbl_band">Band</string>
+    <string name="nt_lbl_public_ip">Public IP</string>
+    <string name="nt_lbl_channel">channel</string>
+    <string name="r_title">Wi-Fi site survey report</string>
+    <string name="r_customer">Customer: %1$s</string>
+    <string name="r_location">Site: %1$s</string>
+    <string name="r_surveyor">Surveyor: %1$s</string>
+    <string name="r_date">Report date: %1$s</string>
+    <string name="r_period">Measurements: from %1$s to %2$s</string>
+    <string name="r_summary">Summary</string>
+    <string name="r_col_floor">Floor</string>
+    <string name="r_method">Method</string>
+    <string name="r_col_vendor">Vendor / model</string>
+    <string name="r_radios">Detected radios (BSSID)</string>
+    <string name="r_col_width">Width</string>
+    <string name="r_col_scans">Scans</string>
+    <string name="r_col_area">Area (m²)</string>
+    <string name="r_col_avg">Avg</string>
+    <string name="r_col_samples">Samples</string>
+    <string name="r_method_text">Passive survey performed with an Android smartphone (built-in Wi-Fi adapter). The path was traced on the floor plan and scan positions are interpolated over time between the tapped points. Signal values are those measured by the phone adapter and may differ by a few dB from a professional adapter. SNR is estimated with a noise floor of %1$d dBm because Android does not expose the noise level. Heatmaps are interpolated (IDW) with a %2$.1f m radius.</string>
+    <string name="r_thresholds">Thresholds: good ≥ %1$d dBm, acceptable ≥ %2$d dBm, minimum usable %3$d dBm, AP count threshold %4$d dBm.</string>
+    <string name="r_cov_rssi">Coverage ≥ %1$d dBm: %2$.0f %% · ≥ %3$d dBm: %4$.0f %% · below %5$d dBm: %6$.0f %%</string>
+    <string name="r_cov_snr">Area with SNR ≥ 25 dB: %1$.0f %%</string>
+    <string name="r_cov_ap">Area with at least 2 APs ≥ %1$d dBm: %2$.0f %%</string>
+    <string name="r_cov_int">Area without channel overlap: %1$.0f %%</string>
+    <string name="r_cov_lat">Area with latency ≤ %1$d ms: %2$.0f %% (ping to %3$s)</string>
+    <string name="r_cov_loss">Area without packet loss: %1$.0f %%</string>
+    <string name="m_primary">Primary signal</string>
+    <string name="m_secondary">Secondary signal</string>
+    <string name="m_snr">SNR (estimated noise)</string>
+    <string name="m_apcount">Number of APs</string>
+    <string name="m_interference">Channel interference</string>
+    <string name="m_latency">Latency (active survey)</string>
+    <string name="m_loss">Packet loss (active survey)</string>
+    <string name="m_perap">Single AP / BSSID</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+</resources>

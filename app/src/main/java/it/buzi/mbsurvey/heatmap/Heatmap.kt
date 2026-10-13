@@ -2,6 +2,7 @@ package it.buzi.mbsurvey.heatmap
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import it.buzi.mbsurvey.R
 import it.buzi.mbsurvey.model.Band
 import it.buzi.mbsurvey.model.Floor
 import it.buzi.mbsurvey.model.Project
@@ -12,15 +13,17 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-enum class Metric(val label: String, val unit: String, val lowerIsBetter: Boolean = false) {
-    PRIMARY_RSSI("Segnale primario", "dBm"),
-    SECONDARY_RSSI("Segnale secondario", "dBm"),
-    SNR("SNR (rumore stimato)", "dB"),
-    AP_COUNT("Numero di AP", "AP"),
-    INTERFERENCE("Interferenza di canale", "BSSID", true),
-    LATENCY("Latenza (survey attiva)", "ms", true),
-    PACKET_LOSS("Perdita pacchetti (survey attiva)", "%", true),
-    PER_AP("Singolo AP / BSSID", "dBm");
+enum class Metric(val labelRes: Int, val unit: String, val lowerIsBetter: Boolean = false) {
+    PRIMARY_RSSI(R.string.m_primary, "dBm"),
+    SECONDARY_RSSI(R.string.m_secondary, "dBm"),
+    SNR(R.string.m_snr, "dB"),
+    AP_COUNT(R.string.m_apcount, "AP"),
+    INTERFERENCE(R.string.m_interference, "BSSID", true),
+    LATENCY(R.string.m_latency, "ms", true),
+    PACKET_LOSS(R.string.m_loss, "%", true),
+    PER_AP(R.string.m_perap, "dBm");
+
+    fun label(ctx: android.content.Context): String = ctx.getString(labelRes)
 }
 
 /** Which scans feed the heatmap. */
@@ -28,8 +31,15 @@ class HeatmapFilter(
     val metric: Metric = Metric.PRIMARY_RSSI,
     val ssid: String? = null,
     val band: Band? = null,
-    val bssid: String? = null
-)
+    val bssid: String? = null,
+    /** When set, only scans of these surveys are used. */
+    val surveyIds: Set<String>? = null,
+    /** Comparison mode: values are (surveyB - surveyA); legend is diverging. */
+    val compareA: String? = null,
+    val compareB: String? = null
+) {
+    val isCompare: Boolean get() = compareA != null && compareB != null
+}
 
 /** A rendered heatmap: a low-resolution grid scaled over the floor plan. */
 class HeatmapResult(
@@ -123,7 +133,11 @@ object Heatmap {
      * stay transparent. Target grid resolution ~ 260 cells on the long side.
      */
     fun render(p: Project, floor: Floor, filter: HeatmapFilter, alpha: Int = 150, radiusMetersOverride: Double? = null): HeatmapResult? {
-        val scans = SurveyEngine.locatedScans(p, floor.id)
+        if (filter.isCompare) return renderCompare(p, floor, filter, alpha, radiusMetersOverride)
+        val scans = SurveyEngine.locatedScans(p, floor.id).let { all ->
+            val ids = filter.surveyIds
+            if (ids == null) all else p.surveysOf(floor.id).filter { it.id in ids }.flatMap { it.locatedScans }
+        }
         val pts = ArrayList<FloatArray>(scans.size)
         for (s in scans) {
             val v = value(s, filter, p) ?: continue
@@ -191,6 +205,35 @@ object Heatmap {
         }
         bmp.setPixels(px, 0, cols, 0, 0, cols, rows)
         return HeatmapResult(bmp, cellPx, values, cols, rows, covered, vmin, vmax, (vsum / covered).toFloat(), legend)
+    }
+
+    /** Difference heatmap B - A for the filter's metric. Cells covered by only one survey stay transparent. */
+    private fun renderCompare(p: Project, floor: Floor, filter: HeatmapFilter, alpha: Int, radiusM: Double?): HeatmapResult? {
+        val base = HeatmapFilter(filter.metric, filter.ssid, filter.band, filter.bssid)
+        val a = render(p, floor, HeatmapFilter(base.metric, base.ssid, base.band, base.bssid, setOf(filter.compareA!!)), alpha, radiusM) ?: return null
+        val b = render(p, floor, HeatmapFilter(base.metric, base.ssid, base.band, base.bssid, setOf(filter.compareB!!)), alpha, radiusM) ?: return null
+        if (a.cols != b.cols || a.rows != b.rows) return null
+        val values = FloatArray(a.values.size) { Float.NaN }
+        var covered = 0; var vmin = Float.MAX_VALUE; var vmax = -Float.MAX_VALUE; var sum = 0.0
+        for (i in values.indices) {
+            val va = a.values[i]; val vb = b.values[i]
+            if (va.isNaN() || vb.isNaN()) continue
+            val d = vb - va
+            values[i] = d; covered++; vmin = min(vmin, d); vmax = max(vmax, d); sum += d
+        }
+        if (covered == 0) return null
+        val span = when (filter.metric) { Metric.AP_COUNT, Metric.INTERFERENCE -> 3f; Metric.PACKET_LOSS -> 20f; Metric.LATENCY -> 50f; else -> 10f }
+        val better = if (filter.metric.lowerIsBetter) Color.rgb(230, 40, 40) else Color.rgb(0, 140, 60)
+        val worse = if (filter.metric.lowerIsBetter) Color.rgb(0, 140, 60) else Color.rgb(230, 40, 40)
+        val legend = listOf(-span to worse, -span / 3 to Color.rgb(255, 200, 120), 0f to Color.rgb(245, 245, 245), span / 3 to Color.rgb(170, 230, 170), span to better)
+        val bmp = Bitmap.createBitmap(a.cols, a.rows, Bitmap.Config.ARGB_8888)
+        val px = IntArray(values.size)
+        for (i in values.indices) {
+            val v = values[i]
+            px[i] = if (v.isNaN()) Color.TRANSPARENT else { val c = colorFor(v, legend); Color.argb(alpha, Color.red(c), Color.green(c), Color.blue(c)) }
+        }
+        bmp.setPixels(px, 0, a.cols, 0, 0, a.cols, a.rows)
+        return HeatmapResult(bmp, a.cellPx, values, a.cols, a.rows, covered, vmin, vmax, (sum / covered).toFloat(), legend)
     }
 
     /** Share of covered cells whose value satisfies the requirement (>= for RSSI/SNR/AP count, <= for interference). */

@@ -100,6 +100,13 @@ class Exporter(private val ctx: Context, private val store: ProjectStore) {
                 img.inputStream().use { it.copyTo(zip) }
                 zip.closeEntry()
             }
+            for (n in p.notes) {
+                val ph = n.photoFile?.let { store.notePhotoFile(p.id, it) } ?: continue
+                if (!ph.exists()) continue
+                zip.putNextEntry(ZipEntry("notes/${ph.name}"))
+                ph.inputStream().use { it.copyTo(zip) }
+                zip.closeEntry()
+            }
         }
     }
 
@@ -157,6 +164,13 @@ class Exporter(private val ctx: Context, private val store: ProjectStore) {
         val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; style = Paint.Style.STROKE; strokeWidth = r / 3 }
         val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = r * 2.2f; isFakeBoldText = true }
         val bg = Paint().apply { color = Color.argb(200, 255, 255, 255) }
+        val notePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(244, 163, 0) }
+        val noteText = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = r * 1.6f; isFakeBoldText = true; textAlign = Paint.Align.CENTER }
+        p.notesOf(floor.id).forEachIndexed { i, n ->
+            val x = (n.x * sx).toFloat(); val y = (n.y * sx).toFloat()
+            c.drawCircle(x, y - r * 1.2f, r * 1.2f, notePaint)
+            c.drawText((i + 1).toString(), x, y - r * 0.6f, noteText)
+        }
         for (a in p.accessPoints) {
             if (a.floorId != floor.id) continue
             val x = ((a.x ?: continue) * sx).toFloat(); val y = ((a.y ?: continue) * sx).toFloat()
@@ -170,7 +184,7 @@ class Exporter(private val ctx: Context, private val store: ProjectStore) {
 
     private fun drawLegend(c: Canvas, res: HeatmapResult, filter: HeatmapFilter, w: Int, top: Float) {
         val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = 22f }
-        c.drawText("${filter.metric.label} (${filter.metric.unit})" + (filter.ssid?.let { " · SSID $it" } ?: "") + (filter.band?.let { " · ${it.label}" } ?: ""), 10f, top + 24f, text)
+        c.drawText("${filter.metric.label(ctx)} (${filter.metric.unit})" + (filter.ssid?.let { " · SSID $it" } ?: "") + (filter.band?.let { " · ${it.label}" } ?: ""), 10f, top + 24f, text)
         val legend = res.legend
         val x0 = 10f; val x1 = w - 10f; val y0 = top + 34f; val y1 = top + 52f
         val vmin = legend.first().first; val vmax = legend.last().first

@@ -75,7 +75,7 @@ class ProjectActivity : AppCompatActivity() {
                 val surveys = project.surveysOf(f.id).size
                 val cal = if (f.isCalibrated) getString(R.string.floor_calibrated, f.widthPx * f.metersPerPx, f.heightPx * f.metersPerPx)
                 else getString(R.string.floor_not_calibrated)
-                "$cal · ${f.widthPx}×${f.heightPx} px · $surveys survey"
+                "$cal · ${f.widthPx}×${f.heightPx} px · $surveys ${getString(R.string.surveys).lowercase()}"
             },
             onClick = { f -> startActivity(Intent(this, FloorActivity::class.java).putExtra(FloorActivity.EXTRA_PROJECT, project.id).putExtra(FloorActivity.EXTRA_FLOOR, f.id)) },
             onMore = { f, v -> floorMenu(f, v) }
@@ -93,7 +93,7 @@ class ProjectActivity : AppCompatActivity() {
             title = { ap -> (if (ap.mine) "● " else "○ ") + ap.name },
             subtitle = { ap ->
                 val floor = project.floor(ap.floorId)?.name
-                val pos = if (ap.x != null && floor != null) floor else "non posizionato"
+                val pos = if (ap.x != null && floor != null) floor else getString(R.string.ap_unplaced)
                 val vm = listOf(ap.vendor, ap.model).filter { it.isNotBlank() }.joinToString(" ")
                 listOf(getString(R.string.ap_summary, pos, ap.bssids.size), vm, ap.source.name.lowercase()).filter { it.isNotBlank() }.joinToString(" · ")
             },
@@ -155,13 +155,13 @@ class ProjectActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val bmp = withContext(Dispatchers.IO) { runCatching { if (pdf) renderPdf(uri) else decodeImage(uri) }.getOrNull() }
             if (bmp == null) {
-                Toast.makeText(this@ProjectActivity, "Impossibile leggere la planimetria", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ProjectActivity, getString(R.string.floor_read_error), Toast.LENGTH_LONG).show()
                 return@launch
             }
-            Dialogs.textInput(this@ProjectActivity, getString(R.string.add_floor), getString(R.string.floor_name_hint), "Piano ${project.floors.size + 1}") { name ->
+            Dialogs.textInput(this@ProjectActivity, getString(R.string.add_floor), getString(R.string.floor_name_hint), getString(R.string.default_floor, project.floors.size + 1)) { name ->
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {
-                        store.addFloor(project, name.ifBlank { "Piano" }, bmp)
+                        store.addFloor(project, name.ifBlank { getString(R.string.default_floor_plain) }, bmp)
                         store.save(project)
                     }
                     refresh()
@@ -224,12 +224,12 @@ class ProjectActivity : AppCompatActivity() {
         m.setOnMenuItemClickListener {
             when (it.itemId) {
                 3 -> startActivity(Intent(this, PlanEditorActivity::class.java).putExtra(PlanEditorActivity.EXTRA_PROJECT, project.id).putExtra(PlanEditorActivity.EXTRA_FLOOR, f.id))
-                4 -> Dialogs.textInput(this, getString(R.string.duplicate_floor), getString(R.string.floor_name_hint), "Piano ${project.floors.size + 1}") { n ->
+                4 -> Dialogs.textInput(this, getString(R.string.duplicate_floor), getString(R.string.floor_name_hint), getString(R.string.default_floor, project.floors.size + 1)) { n ->
                     val drawing = f.drawing ?: return@textInput
                     lifecycleScope.launch {
                         withContext(Dispatchers.Default) {
                             val copy = drawing.copy()
-                            val nf = store.addFloor(project, n.ifBlank { "Piano" }, PlanRenderer.toBitmap(copy), 4096)
+                            val nf = store.addFloor(project, n.ifBlank { getString(R.string.default_floor_plain) }, PlanRenderer.toBitmap(copy), 4096)
                             nf.drawing = copy
                             nf.metersPerPx = 1.0 / PlanDrawing.pxPerMeter(copy.widthM, copy.heightM)
                             store.save(project)
@@ -318,6 +318,7 @@ class ProjectActivity : AppCompatActivity() {
             R.id.action_wizard -> startActivity(Intent(this, WizardActivity::class.java).putExtra(EXTRA_ID, project.id))
             R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             R.id.action_tools -> startActivity(Intent(this, NetToolsActivity::class.java))
+            R.id.action_channels -> startActivity(Intent(this, NetToolsActivity::class.java).putExtra(NetToolsActivity.EXTRA_PROJECT, project.id))
             R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java).putExtra(EXTRA_ID, project.id))
             R.id.action_edit -> editProject()
             R.id.action_delete -> Dialogs.confirm(this, getString(R.string.delete_project_confirm, project.name)) {

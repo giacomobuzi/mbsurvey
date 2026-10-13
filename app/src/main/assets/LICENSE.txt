@@ -1,0 +1,47 @@
+MB Survey
+Copyright (c) 2026 Giacomo Buzi. All rights reserved.
+
+PROPRIETARY SOFTWARE — NOT OPEN SOURCE
+
+This repository and the software it contains ("the Software"), including source
+code, binaries, documentation, designs, icons and data files, are the exclusive
+property of Giacomo Buzi ("the Author") and are protected by copyright law.
+
+No license is granted by access to this repository. Without the prior written
+permission of the Author you may NOT:
+  - copy, fork, mirror or redistribute the Software, in source or binary form;
+  - modify, translate, adapt or create derivative works of the Software;
+  - decompile, disassemble or reverse engineer the Software;
+  - remove or alter any copyright or proprietary notice.
+
+Use of the compiled application is subject to the End User License Agreement
+below.
+
+------------------------------------------------------------------------------
+END USER LICENSE AGREEMENT — MB Survey (Android)
+------------------------------------------------------------------------------
+1. Grant. The Author grants you a personal, non-exclusive, non-transferable,
+   revocable license to install and use MB Survey on Android devices you own or
+   control, for your own Wi-Fi survey work.
+2. Restrictions. You may not copy (except one backup copy), distribute, publish,
+   rent, lend, sublicense, modify, decompile, disassemble or reverse engineer the
+   application, nor use it to build a competing product.
+3. Ownership. The application is licensed, not sold. All intellectual property
+   rights remain with the Author.
+4. Your data. Floor plans, measurements, notes, photos and reports you create
+   remain yours. The application stores them only on your device and does not
+   send them to the Author.
+5. Third-party components. The application includes open-source components that
+   remain under their own licenses: AndroidX, Material Components and Kotlin
+   (Apache License 2.0); Inter font (SIL Open Font License 1.1); IEEE OUI vendor
+   table via oui-data (MIT License). Their notices are reproduced in the in-app
+   guide.
+6. No warranty. The application is provided "as is" without warranties of any
+   kind. Measurements taken with a smartphone Wi-Fi adapter are indicative and do
+   not replace certified test equipment.
+7. Limitation of liability. To the extent permitted by law, the Author is not
+   liable for any damage arising from the use or inability to use the application.
+8. Termination. This license ends automatically if you breach it; you must then
+   delete the application.
+9. Law and jurisdiction. Italian law applies; the courts of Perugia (Italy) have
+   exclusive jurisdiction.

@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
+import it.buzi.mbsurvey.R
 import it.buzi.mbsurvey.data.ProjectStore
 import it.buzi.mbsurvey.heatmap.Heatmap
 import it.buzi.mbsurvey.heatmap.HeatmapFilter
@@ -37,12 +38,14 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
     private val body = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 10f; color = Color.BLACK }
     private val small = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 8f; color = Color.DKGRAY }
     private val line = Paint().apply { color = Color.LTGRAY; strokeWidth = 0.5f }
-    private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY)
+    private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    private fun g(id: Int, vararg args: Any): String = ctx.getString(id, *args)
 
     fun write(p: Project, file: File) {
         cover(p)
         for (floor in p.floors) floorSection(p, floor)
         apTable(p)
+        notesSection(p)
         radioTable(p)
         endPage()
         FileOutputStream(file).use { doc.writeTo(it) }
@@ -58,7 +61,7 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
         page = pg
         canvas = pg.canvas
         y = margin
-        canvas!!.drawText("${p.name} · MB Survey report", margin, H - 20f, small)
+        canvas!!.drawText("${p.name} · ${g(R.string.report_footer)}", margin, H - 20f, small)
         canvas!!.drawText("Pagina $pageNo", W - margin - 40f, H - 20f, small)
     }
 
@@ -111,22 +114,22 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
     private fun cover(p: Project) {
         newPage(p)
         gap(80f)
-        text(p, "Report site survey Wi-Fi", title)
+        text(p, g(R.string.r_title), title)
         gap(10f)
         text(p, p.name, h2)
         gap(20f)
-        if (p.customer.isNotBlank()) text(p, "Cliente: ${p.customer}")
-        if (p.location.isNotBlank()) text(p, "Sede: ${p.location}")
-        if (p.surveyor.isNotBlank()) text(p, "Rilevatore: ${p.surveyor}")
-        text(p, "Data report: ${dateFmt.format(Date())}")
+        if (p.customer.isNotBlank()) text(p, g(R.string.r_customer, p.customer))
+        if (p.location.isNotBlank()) text(p, g(R.string.r_location, p.location))
+        if (p.surveyor.isNotBlank()) text(p, g(R.string.r_surveyor, p.surveyor))
+        text(p, g(R.string.r_date, dateFmt.format(Date())))
         val first = p.surveys.minOfOrNull { it.startedAt }
         val last = p.surveys.maxOfOrNull { it.endedAt ?: it.startedAt }
-        if (first != null && last != null) text(p, "Rilevazioni: dal ${dateFmt.format(Date(first))} al ${dateFmt.format(Date(last))}")
+        if (first != null && last != null) text(p, g(R.string.r_period, dateFmt.format(Date(first)), dateFmt.format(Date(last))))
         gap(20f)
-        text(p, "Sintesi", h2)
+        text(p, g(R.string.r_summary), h2)
         gap(6f)
         val widths = listOf(150f, 70f, 70f, 80f, 70f, 75f)
-        tableRow(p, listOf("Piano", "Survey", "Scansioni", "Area (m²)", "≥ ${p.settings.rssiGood} dBm", "≥ ${p.settings.rssiOk} dBm"), widths, body, true)
+        tableRow(p, listOf(g(R.string.r_col_floor), g(R.string.surveys), g(R.string.r_col_scans), g(R.string.r_col_area), "≥ ${p.settings.rssiGood} dBm", "≥ ${p.settings.rssiOk} dBm"), widths, body, true)
         for (f in p.floors) {
             val surveys = p.surveysOf(f.id)
             val scans = surveys.sumOf { it.locatedScans.size }
@@ -137,16 +140,11 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
             tableRow(p, listOf(f.name, surveys.size.toString(), scans.toString(), area, good, ok), widths)
         }
         gap(20f)
-        text(p, "Metodo", h2)
+        text(p, g(R.string.r_method), h2)
         gap(4f)
-        text(p, "Survey passiva effettuata con smartphone Android (scheda Wi-Fi integrata). Il percorso è stato tracciato " +
-            "sulla planimetria e le posizioni delle scansioni sono interpolate sul tempo tra i punti toccati. I valori di segnale " +
-            "sono quelli misurati dalla scheda del telefono e possono differire di alcuni dB da un adattatore professionale. " +
-            "L'SNR è stimato con un rumore di fondo di ${p.settings.noiseFloorDbm} dBm perché Android non espone il livello di rumore. " +
-            "Le heatmap sono interpolate (IDW) con raggio ${p.settings.heatmapRadiusM} m.")
+        text(p, g(R.string.r_method_text, p.settings.noiseFloorDbm, p.settings.heatmapRadiusM))
         gap(8f)
-        text(p, "Soglie: buono ≥ ${p.settings.rssiGood} dBm, sufficiente ≥ ${p.settings.rssiOk} dBm, minimo utile ${p.settings.rssiMin} dBm, " +
-            "conteggio AP con soglia ${p.settings.apCountThreshold} dBm.")
+        text(p, g(R.string.r_thresholds, p.settings.rssiGood, p.settings.rssiOk, p.settings.rssiMin, p.settings.apCountThreshold))
     }
 
     private fun floorSection(p: Project, floor: Floor) {
@@ -157,7 +155,7 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
             val res = Heatmap.render(p, floor, filter, alpha = 160) ?: continue
             val bmp = Exporter(ctx, store).compositeWith(p, floor, res, filter, 1400) ?: continue
             newPage(p)
-            text(p, "${floor.name} · ${m.label}", h2)
+            text(p, "${floor.name} · ${m.label(ctx)}", h2)
             gap(4f)
             val maxW = W - 2 * margin
             val maxH = H - margin - y - 110f
@@ -167,19 +165,19 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
             y += dh + 10f
             bmp.recycle()
             val area = Heatmap.coveredAreaM2(res, floor)
-            text(p, "Area rilevata: ${"%.0f".format(area)} m² · min ${"%.0f".format(res.min)} · media ${"%.1f".format(res.avg)} · max ${"%.0f".format(res.max)} ${m.unit}")
+            text(p, g(R.string.area_surveyed, area) + " · " + g(R.string.stat_min_avg_max, res.min, res.avg, res.max) + " " + m.unit)
             when (m) {
                 Metric.PRIMARY_RSSI, Metric.SECONDARY_RSSI -> {
                     val good = Heatmap.coverageShare(res, m, p.settings.rssiGood.toFloat()) * 100
                     val ok = Heatmap.coverageShare(res, m, p.settings.rssiOk.toFloat()) * 100
                     val bad = 100 - Heatmap.coverageShare(res, m, p.settings.rssiMin.toFloat()) * 100
-                    text(p, "Copertura ≥ ${p.settings.rssiGood} dBm: ${"%.0f".format(good)} % · ≥ ${p.settings.rssiOk} dBm: ${"%.0f".format(ok)} % · sotto ${p.settings.rssiMin} dBm: ${"%.0f".format(bad)} %")
+                    text(p, g(R.string.r_cov_rssi, p.settings.rssiGood, good, p.settings.rssiOk, ok, p.settings.rssiMin, bad))
                 }
-                Metric.SNR -> text(p, "Area con SNR ≥ 25 dB: ${"%.0f".format(Heatmap.coverageShare(res, m, 25f) * 100)} %")
-                Metric.AP_COUNT -> text(p, "Area con almeno 2 AP ≥ ${p.settings.apCountThreshold} dBm: ${"%.0f".format(Heatmap.coverageShare(res, m, 2f) * 100)} %")
-                Metric.INTERFERENCE -> text(p, "Area senza sovrapposizioni di canale: ${"%.0f".format(Heatmap.coverageShare(res, m, 0f) * 100)} %")
-                Metric.LATENCY -> text(p, "Area con latenza ≤ ${p.settings.latencyGoodMs} ms: ${"%.0f".format(Heatmap.coverageShare(res, m, p.settings.latencyGoodMs.toFloat()) * 100)} % (ping verso ${p.settings.pingTarget.ifBlank { "gateway" }})")
-                Metric.PACKET_LOSS -> text(p, "Area senza perdita di pacchetti: ${"%.0f".format(Heatmap.coverageShare(res, m, 0f) * 100)} %")
+                Metric.SNR -> text(p, g(R.string.r_cov_snr, Heatmap.coverageShare(res, m, 25f) * 100))
+                Metric.AP_COUNT -> text(p, g(R.string.r_cov_ap, p.settings.apCountThreshold, Heatmap.coverageShare(res, m, 2f) * 100))
+                Metric.INTERFERENCE -> text(p, g(R.string.r_cov_int, Heatmap.coverageShare(res, m, 0f) * 100))
+                Metric.LATENCY -> text(p, g(R.string.r_cov_lat, p.settings.latencyGoodMs, Heatmap.coverageShare(res, m, p.settings.latencyGoodMs.toFloat()) * 100, p.settings.pingTarget.ifBlank { "gateway" }))
+                Metric.PACKET_LOSS -> text(p, g(R.string.r_cov_loss, Heatmap.coverageShare(res, m, 0f) * 100))
                 else -> {}
             }
         }
@@ -188,15 +186,43 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
     private fun apTable(p: Project) {
         if (p.accessPoints.isEmpty()) return
         newPage(p)
-        text(p, "Access point", h2)
+        text(p, g(R.string.access_points), h2)
         gap(6f)
         val widths = listOf(130f, 90f, 90f, 40f, 165f)
-        tableRow(p, listOf("Nome", "Piano", "Vendor / modello", "Mio", "BSSID"), widths, body, true)
+        tableRow(p, listOf(g(R.string.name), g(R.string.r_col_floor), g(R.string.r_col_vendor), g(R.string.ap_mine), "BSSID"), widths, body, true)
         for (ap in p.accessPoints.sortedWith(compareByDescending<it.buzi.mbsurvey.model.AccessPoint> { it.mine }.thenBy { it.name })) {
             tableRow(p, listOf(
                 ap.name, p.floor(ap.floorId)?.name ?: "-", listOf(ap.vendor, ap.model).filter { it.isNotBlank() }.joinToString(" "),
-                if (ap.mine) "sì" else "no", ap.bssids.joinToString(", ")
+                g(if (ap.mine) R.string.yes else R.string.no), ap.bssids.joinToString(", ")
             ), widths, small)
+        }
+    }
+
+    private fun notesSection(p: Project) {
+        if (p.notes.isEmpty()) return
+        newPage(p)
+        text(p, g(R.string.report_notes), h2)
+        gap(6f)
+        for (floor in p.floors) {
+            val notes = p.notesOf(floor.id)
+            if (notes.isEmpty()) continue
+            text(p, floor.name, body.apply { isFakeBoldText = true }); body.isFakeBoldText = false
+            notes.forEachIndexed { i, n ->
+                val pos = if (floor.metersPerPx > 0) " (%.1f m, %.1f m)".format(n.x * floor.metersPerPx, n.y * floor.metersPerPx) else ""
+                text(p, "${i + 1}. ${n.text.ifBlank { "-" }}$pos", body, 10f)
+                val photo = n.photoFile?.let { store.notePhotoFile(p.id, it) }
+                if (photo != null && photo.exists()) {
+                    val bmp = store.loadFloorBitmapFile(photo, 600)
+                    if (bmp != null) {
+                        val w = 220f; val h = w * bmp.height / bmp.width
+                        ensure(p, h + 8f)
+                        canvas!!.drawBitmap(bmp, null, RectF(margin + 10f, y, margin + 10f + w, y + h), Paint(Paint.FILTER_BITMAP_FLAG))
+                        y += h + 8f
+                        bmp.recycle()
+                    }
+                }
+            }
+            gap(6f)
         }
     }
 
@@ -204,10 +230,10 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
         val radios = SurveyEngine.radios(p)
         if (radios.isEmpty()) return
         newPage(p)
-        text(p, "Radio rilevate (BSSID)", h2)
+        text(p, g(R.string.r_radios), h2)
         gap(6f)
         val widths = listOf(95f, 120f, 50f, 40f, 45f, 55f, 55f, 55f)
-        tableRow(p, listOf("BSSID", "SSID", "Banda", "Ch", "Larg.", "Max dBm", "Media", "Campioni"), widths, body, true)
+        tableRow(p, listOf("BSSID", "SSID", g(R.string.nt_lbl_band), "Ch", g(R.string.r_col_width), "Max dBm", g(R.string.r_col_avg), g(R.string.r_col_samples)), widths, body, true)
         for (r in radios) {
             tableRow(p, listOf(r.bssid, r.ssid, r.band.label, r.channel.toString(), "${r.widthMhz}", r.maxRssi.toString(), "%.0f".format(r.avgRssi), r.samples.toString()), widths, small)
         }

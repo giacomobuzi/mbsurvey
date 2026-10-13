@@ -40,11 +40,13 @@ object JsonImporter {
         )
         p.floors.addAll(src.floors)
         p.accessPoints.addAll(src.accessPoints)
+        p.notes.addAll(src.notes)
         store.projectDir(p.id)
         for (f in p.floors) {
             val img = File(tmp, "floors/${f.imageFile}")
             if (img.exists()) img.copyTo(store.floorImageFile(p.id, f), overwrite = true)
         }
+        File(tmp, "notes").listFiles()?.forEach { f -> f.copyTo(store.notePhotoFile(p.id, f.name), overwrite = true) }
         File(tmp, "surveys").listFiles()?.filter { it.name.endsWith(".json") }?.forEach { f ->
             runCatching { Survey.fromJson(JSONObject(f.readText())) }.getOrNull()?.let { p.surveys.add(it) }
         }

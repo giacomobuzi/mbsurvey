@@ -43,7 +43,7 @@ class ExportUi(private val activity: AppCompatActivity) {
     }
 
     fun run(project: Project, kind: ExportKind) {
-        Toast.makeText(activity, "Esportazione…", Toast.LENGTH_SHORT).show()
+        Toast.makeText(activity, activity.getString(R.string.exporting), Toast.LENGTH_SHORT).show()
         activity.lifecycleScope.launch {
             val result = withContext(Dispatchers.Default) {
                 runCatching { Exporter(activity, store).export(project, kind) }

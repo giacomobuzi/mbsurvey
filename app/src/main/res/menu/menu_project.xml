@@ -6,6 +6,7 @@
     <item android:id="@+id/action_settings" android:title="@string/settings" app:showAsAction="never" />
     <item android:id="@+id/action_edit" android:title="@string/edit_project" app:showAsAction="never" />
     <item android:id="@+id/action_delete" android:title="@string/delete" app:showAsAction="never" />
+    <item android:id="@+id/action_channels" android:title="@string/channels_project" app:showAsAction="never" />
     <item android:id="@+id/action_wizard" android:title="@string/wizard_title" app:showAsAction="never" />
     <item android:id="@+id/action_help" android:title="@string/help_title" app:showAsAction="never" />
 </menu>

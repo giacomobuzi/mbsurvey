@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import it.buzi.mbsurvey.model.AccessPoint
+import it.buzi.mbsurvey.model.Note
 import it.buzi.mbsurvey.model.Survey
 import kotlin.math.max
 import kotlin.math.min
@@ -39,6 +40,10 @@ class FloorPlanView @JvmOverloads constructor(context: Context, attrs: Attribute
     var accessPoints: List<AccessPoint> = emptyList()
         set(value) { field = value; invalidate() }
     var calibrationPoints: List<PointF> = emptyList()
+        set(value) { field = value; invalidate() }
+    var notes: List<Note> = emptyList()
+        set(value) { field = value; invalidate() }
+    var showNotes = true
         set(value) { field = value; invalidate() }
     var showPath = true
         set(value) { field = value; invalidate() }
@@ -71,6 +76,20 @@ class FloorPlanView @JvmOverloads constructor(context: Context, attrs: Attribute
     private val textBg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(180, 0, 0, 0) }
     private val calibPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(240, 244, 163, 0); strokeWidth = 4f; style = Paint.Style.STROKE }
     private val calibFill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(240, 244, 163, 0) }
+    private val notePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(244, 163, 0) }
+    private val noteText = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = 26f; isFakeBoldText = true; textAlign = Paint.Align.CENTER }
+
+    /** Screen distance in px from a floor point, used for hit-testing notes. */
+    fun screenDistance(fx: Double, fy: Double, sx: Float, sy: Float): Float {
+        val p = toScreen(fx.toFloat(), fy.toFloat())
+        return kotlin.math.hypot(p.x - sx, p.y - sy)
+    }
+
+    /** Note whose pin is closest to the floor point (within 40 screen px), if any. */
+    fun noteAt(fx: Double, fy: Double): Note? {
+        val p = toScreen(fx.toFloat(), fy.toFloat())
+        return notes.minByOrNull { screenDistance(it.x, it.y, p.x, p.y) }?.takeIf { screenDistance(it.x, it.y, p.x, p.y) < 40f }
+    }
 
     private val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(d: ScaleGestureDetector): Boolean {
@@ -210,6 +229,18 @@ class FloorPlanView @JvmOverloads constructor(context: Context, attrs: Attribute
                 val tw = textPaint.measureText(label)
                 canvas.drawRoundRect(p.x + r * 1.6f, p.y - 20f, p.x + r * 1.6f + tw + 12f, p.y + 14f, 6f, 6f, textBg)
                 canvas.drawText(label, p.x + r * 1.6f + 6f, p.y + 6f, textPaint)
+            }
+        }
+
+        if (showNotes) {
+            notes.forEachIndexed { i, n ->
+                val p = toScreen(n.x.toFloat(), n.y.toFloat())
+                // pin: circle + small tail
+                canvas.drawCircle(p.x, p.y - 22f, 20f, notePaint)
+                val tail = android.graphics.Path().apply { moveTo(p.x - 10f, p.y - 10f); lineTo(p.x + 10f, p.y - 10f); lineTo(p.x, p.y + 4f); close() }
+                canvas.drawPath(tail, notePaint)
+                canvas.drawText((i + 1).toString(), p.x, p.y - 13f, noteText)
+                if (n.photoFile != null) canvas.drawCircle(p.x + 16f, p.y - 36f, 6f, apStroke)
             }
         }
 

@@ -75,7 +75,7 @@ class PlanEditorActivity : AppCompatActivity() {
         b.hint.text = getString(R.string.pe_hint_select2)
         b.addRoom.setOnClickListener {
             b.toolGroup.check(b.toolSelect.id)
-            val r = b.editor.addRoom("Stanza ${b.editor.plan.rooms.size + 1}")
+            val r = b.editor.addRoom(getString(R.string.default_room, b.editor.plan.rooms.size + 1))
             updateSummary()
             askRoomName(r)
         }
@@ -184,8 +184,8 @@ class PlanEditorActivity : AppCompatActivity() {
         }
         val existing = floor
         if (existing == null) {
-            Dialogs.textInput(this, getString(R.string.pe_floor_name), getString(R.string.floor_name_hint), "Piano ${project.floors.size + 1}") { n ->
-                persist(null, n.ifBlank { "Piano" }, plan)
+            Dialogs.textInput(this, getString(R.string.pe_floor_name), getString(R.string.floor_name_hint), getString(R.string.default_floor, project.floors.size + 1)) { n ->
+                persist(null, n.ifBlank { getString(R.string.default_floor_plain) }, plan)
             }
         } else persist(existing, existing.name, plan)
     }

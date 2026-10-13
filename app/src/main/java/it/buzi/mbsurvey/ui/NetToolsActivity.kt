@@ -21,7 +21,9 @@ import java.util.Locale
 
 class NetToolsActivity : AppCompatActivity() {
 
-    private enum class Tool { INFO, PING, TRACE, SCAN, PORTS, DNS, SPEED, WIFI }
+    private enum class Tool { INFO, PING, TRACE, SCAN, PORTS, DNS, SPEED, WIFI, CHANNELS }
+
+    companion object { const val EXTRA_PROJECT = "projectId" }
 
     private lateinit var b: ActivityNetToolsBinding
     private var tool = Tool.INFO
@@ -39,12 +41,25 @@ class NetToolsActivity : AppCompatActivity() {
             val id = ids.firstOrNull() ?: return@setOnCheckedStateChangeListener
             tool = when (id) {
                 b.chipPing.id -> Tool.PING; b.chipTrace.id -> Tool.TRACE; b.chipScan.id -> Tool.SCAN; b.chipPorts.id -> Tool.PORTS
-                b.chipDns.id -> Tool.DNS; b.chipSpeed.id -> Tool.SPEED; b.chipWifi.id -> Tool.WIFI; else -> Tool.INFO
+                b.chipDns.id -> Tool.DNS; b.chipSpeed.id -> Tool.SPEED; b.chipWifi.id -> Tool.WIFI; b.chipChannels.id -> Tool.CHANNELS; else -> Tool.INFO
             }
             stop()
             configure()
         }
         b.runBtn.setOnClickListener { if (job?.isActive == true) stop() else run() }
+        val pid = intent.getStringExtra(EXTRA_PROJECT)
+        if (pid != null) {
+            // Opened from a project: show the channel chart built from the project's measurements.
+            val p = runCatching { it.buzi.mbsurvey.data.ProjectStore(this).load(pid) }.getOrNull()
+            if (p != null) {
+                b.chips.check(b.chipChannels.id)
+                val radios = it.buzi.mbsurvey.survey.SurveyEngine.radios(p)
+                b.chart.entries = radios.map { r -> it.buzi.mbsurvey.model.ScanEntry(r.bssid, r.ssid, r.maxRssi, r.freqMhz, r.widthMhz, 0, r.capabilities) }
+                b.toolHelp.text = getString(R.string.channels_project)
+                b.chart.visibility = View.VISIBLE; b.scroll.visibility = View.GONE
+                return
+            }
+        }
         configure()
     }
 
@@ -75,9 +90,13 @@ class NetToolsActivity : AppCompatActivity() {
             Tool.DNS -> { b.toolHelp.setText(R.string.tool_help_dns); b.input1.setHint(R.string.tool_hint_name); b.input1.setText("google.com"); b.input2.visibility = View.GONE }
             Tool.SPEED -> { b.toolHelp.setText(R.string.tool_help_speed); b.input1.setHint(R.string.tool_hint_url); b.input1.setText("https://speed.cloudflare.com/__down?bytes=200000000"); b.input2.setHint(R.string.tool_hint_url_up); b.input2.setText("https://speed.cloudflare.com/__up") }
             Tool.WIFI -> { b.toolHelp.setText(R.string.tool_help_wifi); b.input1.visibility = View.GONE; b.input2.visibility = View.GONE }
+            Tool.CHANNELS -> { b.toolHelp.setText(R.string.tool_help_channels); b.input1.visibility = View.GONE; b.input2.visibility = View.GONE }
         }
+        val chart = tool == Tool.CHANNELS
+        b.chart.visibility = if (chart) View.VISIBLE else View.GONE
+        b.scroll.visibility = if (chart) View.GONE else View.VISIBLE
         clear()
-        if (tool == Tool.INFO) run()
+        if (tool == Tool.INFO || tool == Tool.CHANNELS) run()
     }
 
     private fun clear() { log.setLength(0); b.output.text = "" }
@@ -118,9 +137,10 @@ class NetToolsActivity : AppCompatActivity() {
                     Tool.DNS -> dns(a)
                     Tool.SPEED -> speed(a, c)
                     Tool.WIFI -> wifi()
+                    Tool.CHANNELS -> channels()
                 }
             } catch (e: Exception) {
-                if (e !is kotlinx.coroutines.CancellationException) out("Errore: ${e.message}")
+                if (e !is kotlinx.coroutines.CancellationException) out(getString(R.string.nt_error, e.message ?: ""))
             } finally {
                 b.runBtn.setText(R.string.tool_run)
                 b.progress.visibility = View.INVISIBLE
@@ -132,31 +152,31 @@ class NetToolsActivity : AppCompatActivity() {
         val i = withContext(Dispatchers.IO) { NetTools.connectionInfo(this@NetToolsActivity) }
         out("SSID        ${i.ssid ?: "-"}")
         out("BSSID       ${i.bssid ?: "-"}   ${NetTools.vendor(this, i.bssid) ?: ""}")
-        out("Segnale     ${i.rssi?.let { "$it dBm" } ?: "-"}")
-        out("Banda       ${i.band ?: "-"}   canale ${i.channel ?: "-"}   ${i.freqMhz?.let { "$it MHz" } ?: ""}")
+        out(getString(R.string.nt_lbl_signal) + "     ${i.rssi?.let { "$it dBm" } ?: "-"}")
+        out(getString(R.string.nt_lbl_band) + "       ${i.band ?: "-"}   ${getString(R.string.nt_lbl_channel)} ${i.channel ?: "-"}   ${i.freqMhz?.let { "$it MHz" } ?: ""}")
         out("Standard    ${i.standard ?: "-"}")
         out("Link        ${i.linkMbps?.let { "$it Mbps" } ?: "-"}   TX ${i.txMbps ?: "-"}   RX ${i.rxMbps ?: "-"}")
         out("IP          ${i.ip ?: "-"}${i.prefix?.let { "/$it" } ?: ""}")
         out("Gateway     ${i.gateway ?: "-"}")
         out("DNS         ${i.dns.joinToString(", ").ifBlank { "-" }}")
         out("MTU         ${i.mtu ?: "-"}")
-        out("Internet    ${if (i.hasInternet) "sì" else "no"}")
-        out("IP pubblico …")
+        out("Internet    ${getString(if (i.hasInternet) R.string.yes else R.string.no)}")
+        out(getString(R.string.nt_lbl_public_ip) + " …")
         val ext = NetTools.externalIp()
-        replaceLast("IP pubblico ${ext ?: "-"}")
+        replaceLast(getString(R.string.nt_lbl_public_ip) + " ${ext ?: "-"}")
         if (i.gateway != null) {
             out("")
             out("Ping gateway ${i.gateway} …")
             val p = NetTools.probe(i.gateway, 5)
-            replaceLast("Ping gateway ${i.gateway}: ${p.received}/${p.sent} risposte, media ${fmt(p.avgMs)} ms, max ${fmt(p.maxMs)} ms")
+            replaceLast(getString(R.string.nt_ping_gw_result, i.gateway, p.received, p.sent, fmt(p.avgMs), fmt(p.maxMs)))
         }
         out("Ping 1.1.1.1 …")
         val p2 = NetTools.probe("1.1.1.1", 5)
-        replaceLast("Ping internet (1.1.1.1): ${p2.received}/${p2.sent} risposte, media ${fmt(p2.avgMs)} ms")
+        replaceLast(getString(R.string.nt_ping_inet_result, p2.received, p2.sent, fmt(p2.avgMs)))
     }
 
     private suspend fun ping(host: String, count: Int) {
-        out("PING $host, $count pacchetti")
+        out(getString(R.string.nt_ping_header, host, count))
         val rtts = ArrayList<Double>()
         var sent = 0; var lost = 0
         repeat(count.coerceIn(1, 500)) { i ->
@@ -167,11 +187,11 @@ class NetToolsActivity : AppCompatActivity() {
             delay(300)
         }
         out("")
-        out("--- $sent inviati, ${sent - lost} ricevuti, perdita ${lost * 100 / sent} %")
+        out(getString(R.string.nt_ping_stats, sent, sent - lost, lost * 100 / sent))
         if (rtts.isNotEmpty()) {
             val avg = rtts.average()
             val jitter = if (rtts.size > 1) rtts.zipWithNext { x, y -> kotlin.math.abs(y - x) }.average() else 0.0
-            out("min ${fmt(rtts.min())} / media ${fmt(avg)} / max ${fmt(rtts.max())} ms · jitter ${fmt(jitter)} ms")
+            out(getString(R.string.nt_ping_rtt, fmt(rtts.min()), fmt(avg), fmt(rtts.max()), fmt(jitter)))
         }
     }
 
@@ -180,15 +200,15 @@ class NetToolsActivity : AppCompatActivity() {
         NetTools.traceroute(host) { h ->
             out("%2d  %-16s %s  %s".format(h.ttl, h.ip ?: "*", h.host ?: "", h.rttMs?.let { "${fmt(it)} ms" } ?: ""))
         }
-        out("fine")
+        out(getString(R.string.nt_done))
     }
 
     private suspend fun scan(cidr: String, portSpec: String) {
         val hosts = NetTools.hostsOf(cidr)
-        if (hosts.isEmpty()) { out("Subnet non valida"); return }
+        if (hosts.isEmpty()) { out(getString(R.string.nt_bad_subnet)); return }
         if (hosts.size > 1024) out(getString(R.string.tool_big_subnet, hosts.size))
         val ports = NetTools.portRange(portSpec).ifEmpty { listOf(80, 443) }
-        out("Scansione $cidr (${hosts.size} host), porte ${ports.joinToString(",")}")
+        out(getString(R.string.nt_scanning, cidr, hosts.size, ports.joinToString(",")))
         b.progress.isIndeterminate = false; b.progress.max = hosts.size
         val found = ArrayList<NetTools.HostInfo>()
         NetTools.scanSubnet(cidr, ports, onProgress = { d, _ -> b.progress.progress = d }) { h ->
@@ -197,7 +217,7 @@ class NetToolsActivity : AppCompatActivity() {
         }
         val macs = withContext(Dispatchers.IO) { NetTools.neighbourMacs() }
         out("")
-        out("--- ${found.size} host attivi")
+        out(getString(R.string.nt_hosts_found, found.size))
         for (h in found.sortedBy { ipKey(it.ip) }) {
             val mac = macs[h.ip]
             val vendor = NetTools.vendor(this, mac)
@@ -209,52 +229,52 @@ class NetToolsActivity : AppCompatActivity() {
 
     private suspend fun ports(host: String, spec: String) {
         val list = NetTools.portRange(spec)
-        if (list.isEmpty()) { out("Porte non valide"); return }
-        out("Scansione porte su $host (${list.size} porte)")
+        if (list.isEmpty()) { out(getString(R.string.nt_bad_ports)); return }
+        out(getString(R.string.nt_port_scan, host, list.size))
         b.progress.isIndeterminate = false; b.progress.max = list.size
         var n = 0
-        NetTools.scanPorts(host, list, 400, onOpen = { p -> n++; out("%5d  aperta  %s".format(p, NetTools.serviceNames[p] ?: "")) }, onProgress = { d, _ -> b.progress.progress = d })
-        out("--- $n porte aperte")
+        NetTools.scanPorts(host, list, 400, onOpen = { p -> n++; out("%5d  " + getString(R.string.nt_open) + "  %s".format(p, NetTools.serviceNames[p] ?: "")) }, onProgress = { d, _ -> b.progress.progress = d })
+        out(getString(R.string.nt_ports_open, n))
     }
 
     private suspend fun dns(name: String) {
-        out("Risoluzione $name")
+        out(getString(R.string.nt_resolving, name))
         NetTools.dnsLookup(name).forEach { out("  $it") }
     }
 
     private suspend fun speed(down: String, up: String) {
         if (down.isNotBlank()) {
-            out("Download da $down …")
+            out(getString(R.string.nt_download_from, down))
             val d = NetTools.httpDownload(down, 8) { mbps -> replaceLast("Download: ${fmt(mbps)} Mbit/s …") }
             replaceLast("Download: ${fmt(d)} Mbit/s")
         }
         if (up.isNotBlank()) {
-            out("Upload verso $up …")
+            out(getString(R.string.nt_upload_to, up))
             val u = NetTools.httpUpload(up, 8) { mbps -> replaceLast("Upload: ${fmt(mbps)} Mbit/s …") }
             replaceLast("Upload: ${fmt(u)} Mbit/s")
         }
         val gw = NetTools.gateway(this)
         if (gw != null) {
-            out("Latenza gateway …")
+            out(getString(R.string.nt_gw_latency) + " …")
             val p = NetTools.probe(gw, 10)
-            replaceLast("Latenza gateway: media ${fmt(p.avgMs)} ms, max ${fmt(p.maxMs)} ms, perdita ${p.lossPct} %")
+            replaceLast(getString(R.string.nt_gw_latency_result, fmt(p.avgMs), fmt(p.maxMs), p.lossPct))
         }
     }
 
     private suspend fun wifi() {
         if (!WifiScanService.hasPermissions(this)) { out(getString(R.string.perm_needed)); return }
         WifiScanService.start(this, 3000)
-        out("Scansione in corso… (aggiornamento continuo, premi Stop per fermare)")
+        out(getString(R.string.nt_wifi_scanning))
         try {
             ScanBus.scans.collect { scan ->
                 log.setLength(0)
                 val byBand = scan.entries.sortedWith(compareBy({ it.band.ordinal }, { it.channel }, { -it.rssi }))
-                out("${scan.entries.size} reti · ${java.text.SimpleDateFormat("HH:mm:ss", Locale.ITALY).format(java.util.Date(scan.t))}")
+                out("${scan.entries.size} ${getString(R.string.nt_networks)} · ${java.text.SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(java.util.Date(scan.t))}")
                 var lastBand: String? = null
                 for (e in byBand) {
                     if (e.band.label != lastBand) { out(""); out("== ${e.band.label}"); lastBand = e.band.label }
                     val vendor = NetTools.vendor(this@NetToolsActivity, e.bssid) ?: ""
-                    out("%-24s %4d dBm  ch %3d/%-3d %-5s %s".format(e.ssid.ifBlank { "<nascosto>" }.take(24), e.rssi, e.channel, e.widthMhz, e.security, e.bssid))
+                    out("%-24s %4d dBm  ch %3d/%-3d %-5s %s".format(e.ssid.ifBlank { getString(R.string.nt_hidden) }.take(24), e.rssi, e.channel, e.widthMhz, e.security, e.bssid))
                     if (vendor.isNotBlank()) out("    $vendor")
                 }
             }
@@ -263,7 +283,18 @@ class NetToolsActivity : AppCompatActivity() {
         }
     }
 
-    private fun fmt(v: Double?): String = if (v == null) "-" else String.format(Locale.ITALY, "%.1f", v)
+    private suspend fun channels() {
+        if (!WifiScanService.hasPermissions(this)) { out(getString(R.string.perm_needed)); return }
+        WifiScanService.start(this, 3000)
+        ScanBus.lastScan.value?.let { b.chart.entries = it.entries }
+        try {
+            ScanBus.scans.collect { scan -> b.chart.entries = scan.entries }
+        } finally {
+            WifiScanService.stop(this)
+        }
+    }
+
+    private fun fmt(v: Double?): String = if (v == null) "-" else String.format(Locale.getDefault(), "%.1f", v)
 
     override fun onDestroy() {
         stop()

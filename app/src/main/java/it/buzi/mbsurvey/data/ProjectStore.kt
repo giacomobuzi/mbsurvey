@@ -24,6 +24,8 @@ class ProjectStore(context: Context) {
     fun floorsDir(projectId: String): File = File(projectDir(projectId), "floors").apply { mkdirs() }
     fun surveysDir(projectId: String): File = File(projectDir(projectId), "surveys").apply { mkdirs() }
     fun floorImageFile(projectId: String, floor: Floor): File = File(floorsDir(projectId), floor.imageFile)
+    fun notesDir(projectId: String): File = File(projectDir(projectId), "notes").apply { mkdirs() }
+    fun notePhotoFile(projectId: String, name: String): File = File(notesDir(projectId), name)
 
     fun listProjects(): List<Project> = root.listFiles()
         ?.filter { it.isDirectory && File(it, "project.json").exists() }
@@ -57,6 +59,8 @@ class ProjectStore(context: Context) {
         p.surveys.forEach { saveSurvey(p, it) }
         val keepImg = p.floors.map { it.imageFile }.toSet()
         floorsDir(p.id).listFiles()?.forEach { if (it.name !in keepImg) it.delete() }
+        val keepPhotos = p.notes.mapNotNull { it.photoFile }.toSet()
+        notesDir(p.id).listFiles()?.forEach { if (it.name !in keepPhotos) it.delete() }
     }
 
     fun saveSurvey(p: Project, s: Survey) {
@@ -81,8 +85,9 @@ class ProjectStore(context: Context) {
         return floor
     }
 
-    fun loadFloorBitmap(p: Project, floor: Floor, maxSide: Int = 0): Bitmap? {
-        val f = floorImageFile(p.id, floor)
+    fun loadFloorBitmap(p: Project, floor: Floor, maxSide: Int = 0): Bitmap? = loadFloorBitmapFile(floorImageFile(p.id, floor), maxSide)
+
+    fun loadFloorBitmapFile(f: File, maxSide: Int = 0): Bitmap? {
         if (!f.exists()) return null
         val opts = BitmapFactory.Options()
         if (maxSide > 0) {

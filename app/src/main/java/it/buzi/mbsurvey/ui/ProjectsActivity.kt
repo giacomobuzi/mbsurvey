@@ -96,7 +96,7 @@ class ProjectsActivity : AppCompatActivity() {
             .setTitle(R.string.new_project)
             .setView(d.root)
             .setPositiveButton(R.string.ok) { _, _ ->
-                val name = d.name.text.toString().trim().ifBlank { "Progetto" }
+                val name = d.name.text.toString().trim().ifBlank { getString(R.string.default_project) }
                 val p = Project(
                     name = name,
                     customer = d.customer.text.toString().trim(),
@@ -134,6 +134,7 @@ class ProjectsActivity : AppCompatActivity() {
             R.id.action_import_json -> pickJson.launch(arrayOf("application/zip", "*/*"))
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)
             R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
+            R.id.action_license -> startActivity(Intent(this, HelpActivity::class.java).putExtra(HelpActivity.EXTRA_LICENSE, true))
             R.id.action_tools -> startActivity(Intent(this, NetToolsActivity::class.java))
             else -> return super.onOptionsItemSelected(item)
         }
@@ -141,7 +142,7 @@ class ProjectsActivity : AppCompatActivity() {
     }
 
     private fun importFile(uri: Uri, esx: Boolean) {
-        Toast.makeText(this, "Importazione in corso…", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.importing), Toast.LENGTH_SHORT).show()
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 runCatching {

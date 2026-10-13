@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_tools" android:title="@string/tools_title" android:icon="@drawable/ic_tools" app:showAsAction="ifRoom" />
     <item android:id="@+id/action_show_path" android:title="@string/show_path" android:checkable="true" android:checked="true" app:showAsAction="never" />
+    <item android:id="@+id/action_show_notes" android:title="@string/mode_note" android:checkable="true" android:checked="true" app:showAsAction="never" />
     <item android:id="@+id/action_show_aps" android:title="@string/show_aps" android:checkable="true" android:checked="true" app:showAsAction="never" />
+    <item android:id="@+id/action_compare" android:title="@string/compare_title" app:showAsAction="never" />
     <item android:id="@+id/action_legend" android:title="@string/legend" app:showAsAction="never" />
     <item android:id="@+id/action_throttle_help" android:title="@string/throttle_help_title" app:showAsAction="never" />
     <item android:id="@+id/action_help" android:title="@string/help_title" app:showAsAction="never" />

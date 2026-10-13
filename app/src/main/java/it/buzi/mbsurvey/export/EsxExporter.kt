@@ -57,7 +57,7 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
 
             // ---- reference files from the Ekahau template ----
             for (name in listOf("projectConfiguration", "floorTypes", "usageProfiles", "deviceProfiles", "applicationProfiles",
-                "requirements", "networkCapacitySettings", "attenuationAreaTypes", "wallTypes", "antennaTypes")) {
+                "requirements", "networkCapacitySettings", "attenuationAreaTypes", "wallTypes")) {
                 put("$name.json", ctx.assets.open("esx/$name.json").bufferedReader().use { it.readText() })
             }
 
