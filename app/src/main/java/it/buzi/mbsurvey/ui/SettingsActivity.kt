@@ -1,5 +1,6 @@
 package it.buzi.mbsurvey.ui
 
+import it.buzi.mbsurvey.R
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
