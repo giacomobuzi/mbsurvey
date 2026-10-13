@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import it.buzi.mbsurvey.R
 
 /** Adds slide transitions between screens. */
-open class BaseActivity : BaseActivity() {
+open class BaseActivity : AppCompatActivity() {
     override fun startActivity(intent: Intent?, options: Bundle?) {
         super.startActivity(intent, options)
         @Suppress("DEPRECATION")
