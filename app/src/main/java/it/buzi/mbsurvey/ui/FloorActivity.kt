@@ -419,6 +419,9 @@ class FloorActivity : BaseActivity() {
                 updateRecordButton()
                 updateHint()
                 updateStatus()
+                if (d.modeAr.isChecked) {
+                    startActivity(Intent(this, ArSurveyActivity::class.java).putExtra(ArSurveyActivity.EXTRA_PROJECT, project.id).putExtra(ArSurveyActivity.EXTRA_FLOOR, floor.id))
+                }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -467,6 +470,11 @@ class FloorActivity : BaseActivity() {
             R.id.action_show_notes -> { item.isChecked = !item.isChecked; b.plan.showNotes = item.isChecked }
             R.id.action_legend -> showLegend()
             R.id.action_compare -> chooseCompare()
+            R.id.action_ar -> {
+                val s = RecordingSession.survey
+                if (s != null && s.floorId == floor.id) startActivity(Intent(this, ArSurveyActivity::class.java).putExtra(ArSurveyActivity.EXTRA_PROJECT, project.id).putExtra(ArSurveyActivity.EXTRA_FLOOR, floor.id))
+                else toggleRecording()
+            }
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)
             R.id.action_help -> startActivity(Intent(this, HelpActivity::class.java))
             R.id.action_tools -> startActivity(Intent(this, NetToolsActivity::class.java))
@@ -521,6 +529,13 @@ class FloorActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!RecordingSession.isActive) {
+            project = RecordingSession.projectFor(project.id) ?: runCatching { store.load(project.id) }.getOrDefault(project)
+            floor = project.floor(floor.id) ?: floor
+            rebuildSsidSpinner()
+            refreshOverlays()
+            scheduleHeatmap(force = true)
+        }
         updateRecordButton()
         updateStatus()
         updateHint()

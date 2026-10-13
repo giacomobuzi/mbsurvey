@@ -51,6 +51,12 @@ class FloorPlanView @JvmOverloads constructor(context: Context, attrs: Attribute
         set(value) { field = value; invalidate() }
     var pendingTap: PointF? = null
         set(value) { field = value; invalidate() }
+    /** Live position (camera survey): floor px + heading in map degrees (0 = up). */
+    var livePosition: PointF? = null
+        set(value) { field = value; invalidate() }
+    var liveHeadingDeg: Float = 0f
+        set(value) { field = value; invalidate() }
+    var compact = false
 
     var onTap: ((x: Double, y: Double) -> Unit)? = null
 
@@ -242,6 +248,25 @@ class FloorPlanView @JvmOverloads constructor(context: Context, attrs: Attribute
                 canvas.drawText((i + 1).toString(), p.x, p.y - 13f, noteText)
                 if (n.photoFile != null) canvas.drawCircle(p.x + 16f, p.y - 36f, 6f, apStroke)
             }
+        }
+
+        livePosition?.let { lp ->
+            val p = toScreen(lp.x, lp.y)
+            val rr = if (compact) 10f else 18f
+            val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(70, 30, 100, 200) }
+            canvas.drawCircle(p.x, p.y, rr * 2.2f, glow)
+            val cone = android.graphics.Path()
+            val h = Math.toRadians(liveHeadingDeg.toDouble())
+            val len = rr * 3.2f
+            val a1 = h - Math.toRadians(25.0); val a2 = h + Math.toRadians(25.0)
+            cone.moveTo(p.x, p.y)
+            cone.lineTo(p.x + (Math.sin(a1) * len).toFloat(), p.y - (Math.cos(a1) * len).toFloat())
+            cone.lineTo(p.x + (Math.sin(h) * len * 1.15).toFloat(), p.y - (Math.cos(h) * len * 1.15).toFloat())
+            cone.lineTo(p.x + (Math.sin(a2) * len).toFloat(), p.y - (Math.cos(a2) * len).toFloat())
+            cone.close()
+            canvas.drawPath(cone, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(120, 30, 100, 200) })
+            canvas.drawCircle(p.x, p.y, rr, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(30, 100, 200) })
+            canvas.drawCircle(p.x, p.y, rr, apStroke)
         }
 
         if (calibrationPoints.isNotEmpty()) {

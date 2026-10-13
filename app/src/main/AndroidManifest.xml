@@ -11,10 +11,14 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.wifi" android:required="true" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.stepdetector" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +44,7 @@
         <activity android:name=".ui.WizardActivity" android:parentActivityName=".ui.ProjectActivity" />
         <activity android:name=".ui.HelpActivity" />
         <activity android:name=".ui.NetToolsActivity" />
+        <activity android:name=".ui.ArSurveyActivity" android:screenOrientation="portrait" android:theme="@style/Theme.MyBuzi.Camera" />
         <activity android:name=".ui.PlanEditorActivity" android:parentActivityName=".ui.ProjectActivity" android:screenOrientation="portrait" />
 
         <service

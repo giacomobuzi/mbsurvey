@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- full-screen map overlay (toggle) -->
+    <FrameLayout
+        android:id="@+id/bigMapWrap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3000000"
+        android:visibility="gone">
+        <it.buzi.mbsurvey.ui.FloorPlanView
+            android:id="@+id/bigMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="72dp"
+            android:layout_marginBottom="150dp" />
+        <TextView
+            android:id="@+id/bigMapHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:background="@drawable/bg_status"
+            android:padding="10dp"
+            android:textColor="#FFFFFF" />
+    </FrameLayout>
+
+    <!-- mini map -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/miniCard"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="4dp">
+        <it.buzi.mbsurvey.ui.FloorPlanView
+            android:id="@+id/miniMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F3F5F4" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- status top-left -->
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="12dp"
+        android:background="@drawable/bg_status"
+        android:maxWidth="200dp"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
+
+    <!-- signal bars bottom-left -->
+    <it.buzi.mbsurvey.ui.SignalBarsView
+        android:id="@+id/signals"
+        android:layout_width="220dp"
+        android:layout_height="170dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="92dp" />
+
+    <!-- stillness prompt -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/promptCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="24dp"
+        android:visibility="gone"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="8dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp">
+            <TextView
+                android:id="@+id/promptText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ar_still_prompt"
+                android:textColor="@color/text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="end"
+                android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/promptNo"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/promptYes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/ar_mark_point" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- bottom bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#CC0A4F3A"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMap"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ar_btn_map"
+            android:textColor="#FFFFFF" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHeading"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ar_btn_heading"
+            android:textColor="#FFFFFF" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPoint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:backgroundTint="@color/accent"
+            android:text="@string/ar_btn_point"
+            android:textColor="#000000" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="0.9"
+            android:backgroundTint="@color/warn"
+            android:text="@string/stop" />
+    </LinearLayout>
+</FrameLayout>

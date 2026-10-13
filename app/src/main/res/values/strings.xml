@@ -160,6 +160,9 @@
 • <b>Stop-and-go</b>: tocca il punto, resta fermo finché l\'app raccoglie le scansioni previste, spostati e tocca il punto successivo. Più lento ma più preciso: adatto a scaffalature strette.<br/>
 Il riquadro in basso mostra scansioni fatte e reti viste: deve crescere ogni 2-3 secondi. <b>Annulla</b> toglie l\'ultimo punto. Premi di nuovo il pulsante per terminare: la survey viene salvata e compare nel progetto. Per un magazzino passa in ogni corsia, in entrambe le direzioni se le scaffalature sono alte.</p>
 
+<h2>4b. Survey con camera (AR)</h2>
+<p>Nella finestra di avvio scegli <b>Survey con camera</b>: vedi l\'ambiente dalla fotocamera, la mini-mappa in alto a destra con la tua posizione e le barre dei segnali in basso. Primo tocco: sulla mappa indichi dove sei. <b>Direzione</b>: guarda lungo un corridoio e tocca sulla mappa un punto davanti a te, così la bussola viene allineata alla planimetria. Poi cammina: contapassi e bussola muovono il puntino; quando ti fermi per 2 secondi l\'app chiede se registrare il punto. Se il puntino si allontana da dove sei davvero, tocca la mini-mappa e correggi. I punti e le scansioni sono identici alla survey classica.</p>
+
 <h2>5. Heatmap</h2>
 <p>Con i tre menu in alto scegli metrica, SSID e banda. Metriche: segnale primario (AP più forte), secondario (ridondanza per roaming), SNR stimato, numero di AP sopra soglia, interferenza di canale, singolo BSSID. Menu ⋮ → <b>Legenda</b> per scale, min/media/max, area rilevata e percentuali di copertura. Le soglie si cambiano in Impostazioni.</p>
 
@@ -382,4 +385,20 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="m_perap">Singolo AP / BSSID</string>
     <string name="yes">sì</string>
     <string name="no">no</string>
+    <!-- camera survey -->
+    <string name="ar_mode">Survey con camera (AR)</string>
+    <string name="ar_still_prompt">Sei fermo: registro questo punto sulla mappa?</string>
+    <string name="ar_mark_point">Registra punto</string>
+    <string name="ar_btn_map">Mappa</string>
+    <string name="ar_btn_heading">Direzione</string>
+    <string name="ar_btn_point">Punto</string>
+    <string name="ar_anchor_hint">Tocca sulla mappa il punto esatto in cui ti trovi</string>
+    <string name="ar_heading_hint">Guarda lungo un corridoio e tocca sulla mappa un punto davanti a te</string>
+    <string name="ar_correct_hint">Tocca per correggere la tua posizione · chiudi con Mappa</string>
+    <string name="ar_status">Passi %1$d · direzione %2$.0f° · scansioni %3$d · punti %4$d</string>
+    <string name="ar_not_anchored">Posizione non impostata: premi Mappa e tocca dove sei</string>
+    <string name="ar_no_step">Contapassi non disponibile: la posizione si aggiorna solo con i tocchi sulla mappa</string>
+    <string name="ar_camera_perm">Serve il permesso fotocamera</string>
+    <string name="ar_heading_done">Direzione calibrata</string>
+    <string name="ar_point_added">Punto registrato</string>
 </resources>

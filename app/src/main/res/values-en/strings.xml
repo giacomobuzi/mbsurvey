@@ -154,6 +154,9 @@
 • <b>Stop-and-go</b>: tap the point, stand still until the app collects the configured scans, move and tap the next point. Slower but more accurate: good for narrow aisles.<br/>
 The bottom box shows scans taken and networks seen: it must grow every 2–3 seconds. <b>Undo</b> removes the last point. Press the button again to finish: the survey is saved in the project. In a warehouse walk every aisle, both ways if the racks are tall.</p>
 
+<h2>4b. Camera survey (AR)</h2>
+<p>In the start dialog choose <b>Camera survey</b>: you see the environment through the camera, the mini map top-right with your position and the signal bars at the bottom. First tap: mark on the map where you are. <b>Heading</b>: look down an aisle and tap a map point in front of you, aligning the compass with the floor plan. Then walk: step detector and compass move the dot; when you stop for 2 seconds the app asks whether to record the point. If the dot drifts, tap the mini map and correct it. Points and scans are identical to a classic survey.</p>
+
 <h2>5. Heatmaps</h2>
 <p>Use the three menus at the top to choose metric, SSID and band. Metrics: primary signal (strongest AP), secondary (roaming redundancy), estimated SNR, number of APs above threshold, channel interference, latency and packet loss (active survey), single BSSID. Menu ⋮ → <b>Legend</b> for scales, min/avg/max, surveyed area and coverage percentages. Thresholds are in Settings.</p>
 
@@ -374,4 +377,19 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="m_perap">Single AP / BSSID</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <string name="ar_mode">Camera survey (AR)</string>
+    <string name="ar_still_prompt">You stopped: record this point on the map?</string>
+    <string name="ar_mark_point">Record point</string>
+    <string name="ar_btn_map">Map</string>
+    <string name="ar_btn_heading">Heading</string>
+    <string name="ar_btn_point">Point</string>
+    <string name="ar_anchor_hint">Tap the map exactly where you are standing</string>
+    <string name="ar_heading_hint">Look down an aisle and tap a map point in front of you</string>
+    <string name="ar_correct_hint">Tap to correct your position · close with Map</string>
+    <string name="ar_status">Steps %1$d · heading %2$.0f° · scans %3$d · points %4$d</string>
+    <string name="ar_not_anchored">Position not set: press Map and tap where you are</string>
+    <string name="ar_no_step">Step detector unavailable: position updates only when you tap the map</string>
+    <string name="ar_camera_perm">Camera permission required</string>
+    <string name="ar_heading_done">Heading calibrated</string>
+    <string name="ar_point_added">Point recorded</string>
 </resources>
