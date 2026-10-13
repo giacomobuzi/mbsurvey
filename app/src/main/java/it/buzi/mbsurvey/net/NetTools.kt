@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.Dispatchers.Main
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -90,7 +91,7 @@ object NetTools {
             val rtt = Regex("""time=([\d.]+)""").find(out)?.groupValues?.get(1)?.toDoubleOrNull()
             val ip = reached ?: exceeded
             val name = ip?.let { runCatching { withTimeoutOrNull(800) { InetAddress.getByName(it).canonicalHostName } }.getOrNull() }?.takeIf { it != ip }
-            onHop(Hop(ttl, ip, name, rtt ?: if (ip != null) elapsed else null))
+            withContext(Main) { onHop(Hop(ttl, ip, name, rtt ?: if (ip != null) elapsed else null)) }
             if (reached != null || (ip != null && ip == target)) break
         }
     }
@@ -131,7 +132,7 @@ object NetTools {
     suspend fun scanSubnet(cidr: String, ports: List<Int> = listOf(80, 443, 22, 445), onProgress: suspend (Int, Int) -> Unit, onHost: suspend (HostInfo) -> Unit) = coroutineScope {
         val hosts = hostsOf(cidr)
         val sem = Semaphore(48)
-        var done = 0
+        val done = java.util.concurrent.atomic.AtomicInteger(0)
         val jobs = hosts.map { ip ->
             async(Dispatchers.IO) {
                 sem.withPermit {
@@ -139,11 +140,11 @@ object NetTools {
                     val rtt = quickPingFast(ip)
                     val open = ArrayList<Int>()
                     for (p in ports) if (tcpOpen(ip, p, 300)) open.add(p)
-                    done++
-                    if (done % 8 == 0 || done == hosts.size) onProgress(done, hosts.size)
+                    val d = done.incrementAndGet()
+                    if (d % 8 == 0 || d == hosts.size) withContext(Main) { onProgress(d, hosts.size) }
                     if (rtt != null || open.isNotEmpty()) {
                         val name = runCatching { withTimeoutOrNull(600) { InetAddress.getByName(ip).canonicalHostName } }.getOrNull()?.takeIf { it != ip }
-                        onHost(HostInfo(ip, name, null, null, open, rtt))
+                        withContext(Main) { onHost(HostInfo(ip, name, null, null, open, rtt)) }
                     }
                 }
             }
@@ -184,13 +185,16 @@ object NetTools {
 
     suspend fun scanPorts(ip: String, ports: List<Int>, timeoutMs: Int = 400, onOpen: suspend (Int) -> Unit, onProgress: suspend (Int, Int) -> Unit) = coroutineScope {
         val sem = Semaphore(64)
-        var done = 0
+        val done = java.util.concurrent.atomic.AtomicInteger(0)
         ports.map { p ->
             async(Dispatchers.IO) {
                 sem.withPermit {
-                    if (tcpOpen(ip, p, timeoutMs)) onOpen(p)
-                    done++
-                    if (done % 16 == 0 || done == ports.size) onProgress(done, ports.size)
+                    val isOpen = tcpOpen(ip, p, timeoutMs)
+                    val d = done.incrementAndGet()
+                    withContext(Main) {
+                        if (isOpen) onOpen(p)
+                        if (d % 16 == 0 || d == ports.size) onProgress(d, ports.size)
+                    }
                 }
             }
         }.awaitAll()
@@ -236,7 +240,7 @@ object NetTools {
                 if (n < 0) break
                 bytes += n
                 val now = System.nanoTime()
-                if (now - lastReport > 500_000_000L) { onProgress(bytes * 8.0 / ((now - t0) / 1e9) / 1e6); lastReport = now }
+                if (now - lastReport > 500_000_000L) { val v = bytes * 8.0 / ((now - t0) / 1e9) / 1e6; withContext(Main) { onProgress(v) }; lastReport = now }
                 if (now > end) break
             }
         }
@@ -260,7 +264,7 @@ object NetTools {
             while (isActive && System.nanoTime() < end) {
                 out.write(buf); bytes += buf.size
                 val now = System.nanoTime()
-                if (now - lastReport > 500_000_000L) { onProgress(bytes * 8.0 / ((now - t0) / 1e9) / 1e6); lastReport = now }
+                if (now - lastReport > 500_000_000L) { val v = bytes * 8.0 / ((now - t0) / 1e9) / 1e6; withContext(Main) { onProgress(v) }; lastReport = now }
             }
         }
         runCatching { conn.responseCode }

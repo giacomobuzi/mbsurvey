@@ -9,7 +9,7 @@ import it.buzi.mbsurvey.data.ProjectStore
 import it.buzi.mbsurvey.databinding.ActivitySettingsBinding
 import it.buzi.mbsurvey.model.Project
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     private lateinit var b: ActivitySettingsBinding
     private lateinit var store: ProjectStore

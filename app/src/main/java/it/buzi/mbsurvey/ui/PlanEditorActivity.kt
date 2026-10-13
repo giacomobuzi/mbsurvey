@@ -27,7 +27,7 @@ import java.io.FileOutputStream
  * Draws a floor plan from scratch (rooms, walls, doors) or edits one drawn earlier.
  * On save the drawing is rasterised into the floor image and the floor is calibrated automatically.
  */
-class PlanEditorActivity : AppCompatActivity() {
+class PlanEditorActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PROJECT = "projectId"

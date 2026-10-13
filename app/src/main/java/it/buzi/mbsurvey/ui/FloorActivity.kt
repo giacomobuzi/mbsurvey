@@ -44,7 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FloorActivity : AppCompatActivity() {
+class FloorActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_PROJECT = "projectId"
@@ -427,7 +427,7 @@ class FloorActivity : AppCompatActivity() {
     private fun preflight(): Boolean {
         if (!WifiScanService.hasPermissions(this)) {
             Toast.makeText(this, R.string.perm_needed, Toast.LENGTH_LONG).show()
-            startActivity(Intent(this, ProjectsActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
             return false
         }
         val wm = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager

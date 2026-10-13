@@ -16,7 +16,7 @@ import it.buzi.mbsurvey.survey.SurveyEngine
 import it.buzi.mbsurvey.wifi.WifiScanService
 
 /** Step-by-step checklist for a complete survey, with the state of each step read from the project. */
-class WizardActivity : AppCompatActivity() {
+class WizardActivity : BaseActivity() {
 
     private lateinit var b: ActivityWizardBinding
     private lateinit var store: ProjectStore
@@ -42,6 +42,17 @@ class WizardActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean { finish(); return true }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        menu.add(0, 1, 0, R.string.edit_project).setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_IFROOM)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        if (item.itemId == 1) { startActivity(Intent(this, ProjectActivity::class.java).putExtra(ProjectActivity.EXTRA_ID, project.id)); return true }
+        if (item.itemId == android.R.id.home) { finish(); return true }
+        return super.onOptionsItemSelected(item)
+    }
 
     private fun build() {
         b.steps.removeAllViews()
@@ -99,7 +110,7 @@ class WizardActivity : AppCompatActivity() {
 
     private fun fixPrep(problems: List<String>) {
         when {
-            problems.contains(getString(R.string.wz_prep_perm)) -> startActivity(Intent(this, ProjectsActivity::class.java))
+            problems.contains(getString(R.string.wz_prep_perm)) -> startActivity(Intent(this, HomeActivity::class.java))
             problems.contains(getString(R.string.wz_prep_wifi)) -> runCatching { startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS)) }
             problems.contains(getString(R.string.wz_prep_loc)) -> runCatching { startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
             problems.contains(getString(R.string.wz_prep_throttle)) -> Dialogs.throttleHelp(this)
@@ -108,7 +119,7 @@ class WizardActivity : AppCompatActivity() {
     }
 
     private fun openProject() {
-        finish()
+        startActivity(Intent(this, ProjectActivity::class.java).putExtra(ProjectActivity.EXTRA_ID, project.id))
     }
 
     private fun openFloor() {

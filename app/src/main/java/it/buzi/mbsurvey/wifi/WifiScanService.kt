@@ -26,7 +26,7 @@ import it.buzi.mbsurvey.R
 import it.buzi.mbsurvey.model.Channels
 import it.buzi.mbsurvey.model.Scan
 import it.buzi.mbsurvey.model.ScanEntry
-import it.buzi.mbsurvey.ui.ProjectsActivity
+import it.buzi.mbsurvey.ui.HomeActivity
 
 /**
  * Foreground service that keeps the Wi-Fi scanner running and publishes results on [ScanBus].
@@ -206,7 +206,7 @@ class WifiScanService : Service() {
 
     private fun buildNotification(text: String = getString(R.string.notif_scanning)): Notification {
         val pi = PendingIntent.getActivity(
-            this, 0, Intent(this, ProjectsActivity::class.java),
+            this, 0, Intent(this, HomeActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val stop = PendingIntent.getService(

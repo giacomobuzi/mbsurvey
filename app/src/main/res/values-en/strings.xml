@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MB Survey</string>
+    <string name="app_name">MyBuzi WiFi Survey</string>
+    <string name="home_title">MYBUZI WIFI SURVEY</string>
+    <string name="home_subtitle">Wi-Fi site survey, heatmaps, reports and network tools from your phone.</string>
+    <string name="home_sections">Sections</string>
+    <string name="home_new">New project</string>
+    <string name="home_new_desc">Guided procedure: floor plan, calibration, survey, export</string>
+    <string name="home_projects">Projects</string>
+    <string name="home_projects_desc">%1$d saved projects</string>
+    <string name="home_tools">Network tools</string>
+    <string name="home_tools_desc">Connection, ping, traceroute, scan, ports, speed, channels</string>
+    <string name="home_help">Guide and license</string>
+    <string name="home_help_desc">How to survey, tips, legal notes</string>
+    <string name="home_status_ok">Wi-Fi: %1$s · %2$d dBm · scan throttling off</string>
+    <string name="home_status_throttle">Wi-Fi: %1$s · scan throttling ON: tap to disable</string>
+    <string name="home_status_nowifi">Wi-Fi not connected</string>
+    <string name="home">Home</string>
     <string name="notif_channel">Wi-Fi scanning</string>
     <string name="notif_scanning">Wi-Fi scan in progress</string>
     <string name="notif_last_scan">Last scan: %1$d networks</string>
@@ -281,8 +296,8 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="compare_off">Comparison off</string>
     <string name="compare_legend">difference after − before (green = improved)</string>
     <string name="license_title">License</string>
-    <string name="about_footer">MB Survey © 2026 Giacomo Buzi. All rights reserved.</string>
-    <string name="report_footer">Generated with MB Survey © Giacomo Buzi · all rights reserved</string>
+    <string name="about_footer">MyBuzi WiFi Survey © 2026 Giacomo Buzi. All rights reserved.</string>
+    <string name="report_footer">Generated with MyBuzi WiFi Survey © Giacomo Buzi · all rights reserved</string>
 
     <string name="exporting">Exporting…</string>
     <string name="importing">Importing…</string>

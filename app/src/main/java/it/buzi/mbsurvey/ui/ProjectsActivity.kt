@@ -26,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProjectsActivity : AppCompatActivity() {
+class ProjectsActivity : BaseActivity() {
 
     private lateinit var b: ActivityProjectsBinding
     private lateinit var store: ProjectStore
@@ -46,6 +46,7 @@ class ProjectsActivity : AppCompatActivity() {
         b = ActivityProjectsBinding.inflate(layoutInflater)
         setContentView(b.root)
         setSupportActionBar(b.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         store = ProjectStore(this)
 
         adapter = TwoLineAdapter(
@@ -104,7 +105,7 @@ class ProjectsActivity : AppCompatActivity() {
                     surveyor = d.surveyor.text.toString().trim()
                 )
                 store.save(p)
-                open(p)
+                startActivity(Intent(this, WizardActivity::class.java).putExtra(ProjectActivity.EXTRA_ID, p.id))
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -130,6 +131,7 @@ class ProjectsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            android.R.id.home -> finish()
             R.id.action_import_esx -> pickEsx.launch(arrayOf("*/*"))
             R.id.action_import_json -> pickJson.launch(arrayOf("application/zip", "*/*"))
             R.id.action_throttle_help -> Dialogs.throttleHelp(this)

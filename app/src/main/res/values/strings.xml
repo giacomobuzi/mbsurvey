@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MB Survey</string>
+    <string name="app_name">MyBuzi WiFi Survey</string>
+    <string name="home_title">MYBUZI WIFI SURVEY</string>
+    <string name="home_subtitle">Site survey Wi-Fi, heatmap, report e strumenti di rete dal telefono.</string>
+    <string name="home_sections">Sezioni</string>
+    <string name="home_new">Nuovo progetto</string>
+    <string name="home_new_desc">Procedura guidata: planimetria, calibrazione, survey, export</string>
+    <string name="home_projects">Progetti</string>
+    <string name="home_projects_desc">%1$d progetti salvati</string>
+    <string name="home_tools">Strumenti di rete</string>
+    <string name="home_tools_desc">Connessione, ping, traceroute, scansione, porte, velocità, canali</string>
+    <string name="home_help">Guida e licenza</string>
+    <string name="home_help_desc">Come fare una survey, consigli, note legali</string>
+    <string name="home_status_ok">Wi-Fi: %1$s · %2$d dBm · scan throttling disattivato</string>
+    <string name="home_status_throttle">Wi-Fi: %1$s · scan throttling ATTIVO: tocca per disattivarlo</string>
+    <string name="home_status_nowifi">Wi-Fi non connesso</string>
+    <string name="home">Home</string>
     <string name="notif_channel">Scansione Wi-Fi</string>
     <string name="notif_scanning">Scansione Wi-Fi in corso</string>
     <string name="notif_last_scan">Ultima scansione: %1$d reti</string>
@@ -288,8 +303,8 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="compare_off">Confronto disattivato</string>
     <string name="compare_legend">differenza dopo − prima (verde = migliorato)</string>
     <string name="license_title">Licenza</string>
-    <string name="about_footer">MB Survey © 2026 Giacomo Buzi. Tutti i diritti riservati.</string>
-    <string name="report_footer">Generato con MB Survey © Giacomo Buzi · tutti i diritti riservati</string>
+    <string name="about_footer">MyBuzi WiFi Survey © 2026 Giacomo Buzi. Tutti i diritti riservati.</string>
+    <string name="report_footer">Generato con MyBuzi WiFi Survey © Giacomo Buzi · tutti i diritti riservati</string>
 
     <!-- moved from code -->
     <string name="exporting">Esportazione…</string>

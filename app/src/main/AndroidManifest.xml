@@ -25,13 +25,15 @@
         android:theme="@style/Theme.WiFiSurvey">
 
         <activity
-            android:name=".ui.ProjectsActivity"
-            android:exported="true">
+            android:name=".ui.HomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MyBuzi.Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.ProjectsActivity" android:parentActivityName=".ui.HomeActivity" />
         <activity android:name=".ui.ProjectActivity" android:parentActivityName=".ui.ProjectsActivity" />
         <activity android:name=".ui.FloorActivity" android:parentActivityName=".ui.ProjectActivity" android:screenOrientation="portrait" />
         <activity android:name=".ui.SettingsActivity" android:parentActivityName=".ui.ProjectActivity" />

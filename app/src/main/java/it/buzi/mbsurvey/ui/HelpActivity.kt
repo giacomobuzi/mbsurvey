@@ -6,7 +6,7 @@ import androidx.core.text.HtmlCompat
 import it.buzi.mbsurvey.R
 import it.buzi.mbsurvey.databinding.ActivityHelpBinding
 
-class HelpActivity : AppCompatActivity() {
+class HelpActivity : BaseActivity() {
     companion object { const val EXTRA_LICENSE = "license" }
 
     override fun onCreate(savedInstanceState: Bundle?) {
