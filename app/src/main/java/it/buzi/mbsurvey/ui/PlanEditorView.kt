@@ -343,7 +343,7 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
                             when (t) {
                                 is Room -> {
                                     if (resizeCorner >= 0) resize(t, o, resizeCorner, dx, dy) else {
-                                        t.x = (o[0] + dx).coerceIn(0.0, plan.widthM - t.w); t.y = (o[1] + dy).coerceIn(0.0, plan.heightM - t.h)
+                                        t.x = (o[0] + dx).coerceIn(0.0, max(0.0, plan.widthM - t.w)); t.y = (o[1] + dy).coerceIn(0.0, max(0.0, plan.heightM - t.h))
                                     }
                                     fitRoom(t, resizing = resizeCorner >= 0)
                                 }
@@ -421,6 +421,31 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
         r.w = max(snapM, r.w); r.h = max(snapM, r.h)
         r.x = r.x.coerceIn(0.0, max(0.0, plan.widthM - r.w)); r.y = r.y.coerceIn(0.0, max(0.0, plan.heightM - r.h))
         r.w = min(r.w, plan.widthM - r.x); r.h = min(r.h, plan.heightM - r.y)
+        // the border clamp may have pushed it back onto a neighbour: shrink until free
+        for (o in others) {
+            val ox = min(r.x + r.w, o.x + o.w) - max(r.x, o.x)
+            val oy = min(r.y + r.h, o.y + o.h) - max(r.y, o.y)
+            if (ox <= 1e-6 || oy <= 1e-6) continue
+            if (ox < oy) { if (r.x + r.w / 2 < o.x + o.w / 2) r.w -= ox else { r.x += ox; r.w -= ox } }
+            else { if (r.y + r.h / 2 < o.y + o.h / 2) r.h -= oy else { r.y += oy; r.h -= oy } }
+            r.w = max(snapM, r.w); r.h = max(snapM, r.h)
+        }
+    }
+
+    /** Fits every room inside the plan and removes overlaps (used after a plan resize and before saving). */
+    fun validateAll(): Int {
+        var fixed = 0
+        for (r in plan.rooms) {
+            val before = doubleArrayOf(r.x, r.y, r.w, r.h)
+            if (r.w > plan.widthM) r.w = plan.widthM
+            if (r.h > plan.heightM) r.h = plan.heightM
+            fitRoom(r, resizing = true)
+            if (before[0] != r.x || before[1] != r.y || before[2] != r.w || before[3] != r.h) fixed++
+        }
+        for (w in plan.walls) clampWall(w)
+        for (d in plan.doors) clampDoor(d)
+        invalidate()
+        return fixed
     }
 
     /** True when r overlaps any other room (used to reject impossible numeric input). */

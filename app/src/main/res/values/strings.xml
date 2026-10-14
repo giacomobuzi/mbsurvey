@@ -427,4 +427,5 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="pe_y_m">Posizione Y (m)</string>
     <string name="pe_room_info">Piano %1$.1f × %2$.1f m · stanze %3$.0f m² su %4$.0f m². Le stanze non possono sovrapporsi né uscire dal piano: le misure in eccesso vengono ridotte.</string>
     <string name="pe_room_trimmed">Misure ridotte a %1$.1f × %2$.1f m per restare nel piano senza sovrapposizioni</string>
+    <string name="pe_rooms_fixed">Corrette %1$d stanze per restare nel piano senza sovrapposizioni</string>
 </resources>

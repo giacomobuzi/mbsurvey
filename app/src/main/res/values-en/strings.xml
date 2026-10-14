@@ -418,4 +418,5 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="pe_y_m">Y position (m)</string>
     <string name="pe_room_info">Floor %1$.1f × %2$.1f m · rooms %3$.0f m² of %4$.0f m². Rooms cannot overlap or leave the floor: excess sizes are trimmed.</string>
     <string name="pe_room_trimmed">Size trimmed to %1$.1f × %2$.1f m to stay inside the floor without overlaps</string>
+    <string name="pe_rooms_fixed">%1$d rooms adjusted to fit the floor without overlaps</string>
 </resources>

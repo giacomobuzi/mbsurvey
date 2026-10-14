@@ -80,6 +80,7 @@ class PlanEditorActivity : BaseActivity() {
             askRoomName(r)
         }
         b.addWall.setOnClickListener { b.toolGroup.check(b.toolSelect.id); b.editor.addWall() }
+        b.dimsBtn.setOnLongClickListener { showRoomList(); true }
         b.dimsBtn.isChecked = b.editor.plan.showDims
         b.dimsBtn.addOnCheckedChangeListener { _, checked -> b.editor.plan.showDims = checked; dirty = true; b.editor.invalidate() }
         b.sizeBtn.setOnClickListener { askSize() }
@@ -124,6 +125,8 @@ class PlanEditorActivity : BaseActivity() {
                 if (w != null && h != null && w in 2.0..500.0 && h in 2.0..500.0) {
                     snapshot()
                     b.editor.plan.widthM = w; b.editor.plan.heightM = h
+                    val fixed = b.editor.validateAll()
+                    if (fixed > 0) Toast.makeText(this, getString(R.string.pe_rooms_fixed, fixed), Toast.LENGTH_LONG).show()
                     b.editor.fitToScreen()
                     dirty = true
                     updateSummary()
@@ -131,6 +134,15 @@ class PlanEditorActivity : BaseActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    private fun showRoomList() {
+        val p = b.editor.plan
+        val sb = StringBuilder()
+        sb.append("%.1f × %.1f m = %.0f m²\n\n".format(p.widthM, p.heightM, p.widthM * p.heightM))
+        p.rooms.forEachIndexed { i, r -> sb.append("${i + 1}. ${r.name.ifBlank { "-" }}: %.1f × %.1f m = %.1f m²  (x %.1f, y %.1f)\n".format(r.w, r.h, r.w * r.h, r.x, r.y)) }
+        sb.append("\n" + getString(R.string.pe_total_area, p.rooms.size, p.totalRoomAreaM2))
+        Dialogs.info(this, getString(R.string.pe_dims), sb.toString())
     }
 
     private fun updateSummary() {
@@ -197,6 +209,8 @@ class PlanEditorActivity : BaseActivity() {
     }
 
     private fun save() {
+        val fixed = b.editor.validateAll()
+        if (fixed > 0) Toast.makeText(this, getString(R.string.pe_rooms_fixed, fixed), Toast.LENGTH_LONG).show()
         val plan = b.editor.plan
         if (plan.rooms.isEmpty() && plan.walls.isEmpty()) {
             Toast.makeText(this, R.string.pe_empty, Toast.LENGTH_LONG).show(); return
