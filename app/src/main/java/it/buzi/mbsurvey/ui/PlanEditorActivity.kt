@@ -135,7 +135,7 @@ class PlanEditorActivity : BaseActivity() {
 
     private fun updateSummary() {
         val p = b.editor.plan
-        supportActionBar?.subtitle = getString(R.string.pe_total_area, p.rooms.size, p.totalRoomAreaM2) + " · " + "%.0f × %.0f m".format(p.widthM, p.heightM)
+        supportActionBar?.subtitle = getString(R.string.pe_total_area, p.rooms.size, p.totalRoomAreaM2) + " / " + "%.0f m² · %.0f × %.0f m".format(p.widthM * p.heightM, p.widthM, p.heightM)
     }
 
     private fun askDoorWidth(d: Door) {
@@ -146,11 +146,30 @@ class PlanEditorActivity : BaseActivity() {
     }
 
     private fun askRoomName(r: Room) {
-        Dialogs.textInput(this, getString(R.string.pe_room_name), getString(R.string.pe_room_name_hint), r.name) { n ->
-            r.name = n
-            dirty = true
-            b.editor.invalidate()
-        }
+        val d = it.buzi.mbsurvey.databinding.DialogRoomBinding.inflate(layoutInflater)
+        fun f(v: Double) = String.format(java.util.Locale.US, "%.1f", v)
+        d.name.setText(r.name); d.w.setText(f(r.w)); d.h.setText(f(r.h)); d.x.setText(f(r.x)); d.y.setText(f(r.y))
+        val plan = b.editor.plan
+        d.info.text = getString(R.string.pe_room_info, plan.widthM, plan.heightM, plan.totalRoomAreaM2, plan.widthM * plan.heightM)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pe_room_name)
+            .setView(d.root)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                r.name = d.name.text.toString().trim()
+                val w = d.w.text.toString().replace(',', '.').toDoubleOrNull() ?: r.w
+                val h = d.h.text.toString().replace(',', '.').toDoubleOrNull() ?: r.h
+                val x = d.x.text.toString().replace(',', '.').toDoubleOrNull() ?: r.x
+                val y = d.y.text.toString().replace(',', '.').toDoubleOrNull() ?: r.y
+                b.editor.setRoomGeometry(r, x, y, w, h)
+                if (kotlin.math.abs(r.w - w) > 0.05 || kotlin.math.abs(r.h - h) > 0.05) {
+                    Toast.makeText(this, getString(R.string.pe_room_trimmed, r.w, r.h), Toast.LENGTH_LONG).show()
+                }
+                dirty = true
+                updateSummary()
+                b.editor.invalidate()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -414,4 +414,8 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="delete_aps_all_confirm">Delete every access point in the project?</string>
     <string name="all_floors">All floors</string>
     <string name="r_floor_networks">Networks and channels · %1$s</string>
+    <string name="pe_x_m">X position (m)</string>
+    <string name="pe_y_m">Y position (m)</string>
+    <string name="pe_room_info">Floor %1$.1f × %2$.1f m · rooms %3$.0f m² of %4$.0f m². Rooms cannot overlap or leave the floor: excess sizes are trimmed.</string>
+    <string name="pe_room_trimmed">Size trimmed to %1$.1f × %2$.1f m to stay inside the floor without overlaps</string>
 </resources>

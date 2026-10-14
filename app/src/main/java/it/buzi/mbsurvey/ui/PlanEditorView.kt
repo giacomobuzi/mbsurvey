@@ -200,6 +200,21 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
         val r = Room(name = name, x = snap(cx - w / 2 + k), y = snap(cy - h / 2 + k), w = w, h = h)
         r.x = r.x.coerceIn(0.0, plan.widthM - w); r.y = r.y.coerceIn(0.0, plan.heightM - h)
         plan.rooms.add(r)
+        // find a free spot: scan the grid for the first position without overlap
+        if (overlapsOthers(r)) {
+            var placed = false
+            var yy = 0.0
+            while (yy + r.h <= plan.heightM + 1e-6 && !placed) {
+                var xx = 0.0
+                while (xx + r.w <= plan.widthM + 1e-6) {
+                    r.x = xx; r.y = yy
+                    if (!overlapsOthers(r)) { placed = true; break }
+                    xx += snapM
+                }
+                yy += snapM
+            }
+            if (!placed) { r.w = snap(min(r.w, 3.0)); r.h = snap(min(r.h, 3.0)); r.x = 0.0; r.y = 0.0; fitRoom(r, resizing = true) }
+        }
         selectedId = r.id
         commitChange()
         return r
@@ -326,8 +341,11 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
                         } else {
                             val dx = snap(mx - dragStartMx); val dy = snap(my - dragStartMy)
                             when (t) {
-                                is Room -> if (resizeCorner >= 0) resize(t, o, resizeCorner, dx, dy) else {
-                                    t.x = (o[0] + dx).coerceIn(0.0, plan.widthM - t.w); t.y = (o[1] + dy).coerceIn(0.0, plan.heightM - t.h)
+                                is Room -> {
+                                    if (resizeCorner >= 0) resize(t, o, resizeCorner, dx, dy) else {
+                                        t.x = (o[0] + dx).coerceIn(0.0, plan.widthM - t.w); t.y = (o[1] + dy).coerceIn(0.0, plan.heightM - t.h)
+                                    }
+                                    fitRoom(t, resizing = resizeCorner >= 0)
                                 }
                                 is Wall -> {
                                     when (wallEnd) {
@@ -349,7 +367,7 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (dragging && !multiTouch) {
                     when (val d = draft) {
-                        is Room -> if (d.w >= snapM && d.h >= snapM) { plan.rooms.add(d); selectedId = d.id; commitChange(); onRoomCreated?.invoke(d) } else cancelChange()
+                        is Room -> if (d.w >= snapM && d.h >= snapM) { plan.rooms.add(d); fitRoom(d, resizing = true); selectedId = d.id; commitChange(); onRoomCreated?.invoke(d) } else cancelChange()
                         is Wall -> if (hypot(d.x2 - d.x1, d.y2 - d.y1) >= snapM) { plan.walls.add(d); selectedId = d.id; commitChange() } else cancelChange()
                         else -> if (moveTarget != null) commitChange() else cancelChange()
                     }
@@ -359,6 +377,61 @@ class PlanEditorView @JvmOverloads constructor(context: Context, attrs: Attribut
             }
         }
         return true
+    }
+
+    private val snapTolM = 0.3
+
+    /** Keeps r inside the plan and free of overlaps with other rooms: edges snap to neighbours, overlaps are pushed out
+     *  (when moving) or trimmed (when resizing). */
+    private fun fitRoom(r: Room, resizing: Boolean) {
+        val others = plan.rooms.filter { it !== r }
+        // magnetic snapping to neighbour edges and plan borders
+        for (o in others) {
+            if (abs(r.x - (o.x + o.w)) < snapTolM) r.x = o.x + o.w
+            if (abs((r.x + r.w) - o.x) < snapTolM) { if (resizing) r.w = o.x - r.x else r.x = o.x - r.w }
+            if (abs(r.y - (o.y + o.h)) < snapTolM) r.y = o.y + o.h
+            if (abs((r.y + r.h) - o.y) < snapTolM) { if (resizing) r.h = o.y - r.y else r.y = o.y - r.h }
+            if (abs(r.x - o.x) < snapTolM) r.x = o.x
+            if (abs(r.y - o.y) < snapTolM) r.y = o.y
+        }
+        if (abs(r.x + r.w - plan.widthM) < snapTolM) { if (resizing) r.w = plan.widthM - r.x else r.x = plan.widthM - r.w }
+        if (abs(r.y + r.h - plan.heightM) < snapTolM) { if (resizing) r.h = plan.heightM - r.y else r.y = plan.heightM - r.h }
+        if (abs(r.x) < snapTolM) r.x = 0.0
+        if (abs(r.y) < snapTolM) r.y = 0.0
+        // resolve remaining overlaps (a few passes)
+        repeat(4) {
+            var moved = false
+            for (o in others) {
+                val ox = min(r.x + r.w, o.x + o.w) - max(r.x, o.x)
+                val oy = min(r.y + r.h, o.y + o.h) - max(r.y, o.y)
+                if (ox <= 1e-6 || oy <= 1e-6) continue
+                moved = true
+                val rcx = r.x + r.w / 2; val ocx = o.x + o.w / 2
+                val rcy = r.y + r.h / 2; val ocy = o.y + o.h / 2
+                if (ox < oy) {
+                    if (resizing) { if (rcx < ocx) r.w -= ox else { r.x += ox; r.w -= ox } }
+                    else { if (rcx < ocx) r.x -= ox else r.x += ox }
+                } else {
+                    if (resizing) { if (rcy < ocy) r.h -= oy else { r.y += oy; r.h -= oy } }
+                    else { if (rcy < ocy) r.y -= oy else r.y += oy }
+                }
+            }
+            if (!moved) return@repeat
+        }
+        r.w = max(snapM, r.w); r.h = max(snapM, r.h)
+        r.x = r.x.coerceIn(0.0, max(0.0, plan.widthM - r.w)); r.y = r.y.coerceIn(0.0, max(0.0, plan.heightM - r.h))
+        r.w = min(r.w, plan.widthM - r.x); r.h = min(r.h, plan.heightM - r.y)
+    }
+
+    /** True when r overlaps any other room (used to reject impossible numeric input). */
+    fun overlapsOthers(r: Room): Boolean = plan.rooms.any { o -> o !== r && min(r.x + r.w, o.x + o.w) - max(r.x, o.x) > 1e-6 && min(r.y + r.h, o.y + o.h) - max(r.y, o.y) > 1e-6 }
+
+    /** Applies numeric geometry to a room, fitting it inside the plan and away from other rooms. */
+    fun setRoomGeometry(r: Room, x: Double, y: Double, w: Double, h: Double) {
+        beginChange()
+        r.x = x; r.y = y; r.w = max(snapM, w); r.h = max(snapM, h)
+        fitRoom(r, resizing = true)
+        commitChange()
     }
 
     private fun resize(r: Room, o: DoubleArray, corner: Int, dx: Double, dy: Double) {

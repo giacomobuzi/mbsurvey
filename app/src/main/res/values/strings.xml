@@ -150,7 +150,7 @@
 <p>Crea un progetto (cliente, sede, rilevatore) oppure usa <b>Importa .esx</b> per caricare un progetto Ekahau esistente: vengono importate planimetrie, scala e access point pianificati, così puoi validare il design sul campo.</p>
 
 <h2>2. Planimetria</h2>
-<p><b>Aggiungi piano</b> → <b>Disegna planimetria</b> per crearla sul telefono: imposti le dimensioni in metri, trascini per disegnare stanze e aree (con nome), muri e scaffalature, tocchi un bordo per mettere una porta. La scala viene calibrata da sola. Oppure carica un\'immagine (JPG/PNG) o un PDF: va bene anche una foto di uno schizzo. Un piano per ogni livello dell\'edificio.</p>
+<p><b>Aggiungi piano</b> → <b>Disegna planimetria</b> per crearla sul telefono: imposti le dimensioni in metri, aggiungi stanze e aree (con nome e misure esatte in metri: non possono sovrapporsi né uscire dal piano), muri e scaffalature, tocchi un bordo per mettere una porta. La scala viene calibrata da sola. Oppure carica un\'immagine (JPG/PNG) o un PDF: va bene anche una foto di uno schizzo. Un piano per ogni livello dell\'edificio.</p>
 
 <h2>3. Calibrazione</h2>
 <p>Apri il piano, in basso scegli <b>Calibra</b>, tocca due punti a distanza nota (una parete, una campata tra colonne, una porta) e inserisci i metri. Serve per le aree in m², il raggio delle heatmap e la scala nel file Ekahau. Più lunga è la distanza di riferimento, più precisa è la calibrazione.</p>
@@ -423,4 +423,8 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="delete_aps_all_confirm">Eliminare tutti gli access point del progetto?</string>
     <string name="all_floors">Tutti i piani</string>
     <string name="r_floor_networks">Reti e canali · %1$s</string>
+    <string name="pe_x_m">Posizione X (m)</string>
+    <string name="pe_y_m">Posizione Y (m)</string>
+    <string name="pe_room_info">Piano %1$.1f × %2$.1f m · stanze %3$.0f m² su %4$.0f m². Le stanze non possono sovrapporsi né uscire dal piano: le misure in eccesso vengono ridotte.</string>
+    <string name="pe_room_trimmed">Misure ridotte a %1$.1f × %2$.1f m per restare nel piano senza sovrapposizioni</string>
 </resources>
