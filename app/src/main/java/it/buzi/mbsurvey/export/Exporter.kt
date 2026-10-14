@@ -29,7 +29,8 @@ enum class ExportKind(@StringRes val labelRes: Int, val mime: String) {
     JSON(R.string.export_json, "application/zip"),
     PNG(R.string.export_png, "application/zip"),
     PDF(R.string.export_pdf, "application/pdf"),
-    ESX(R.string.export_esx, "application/octet-stream")
+    ESX(R.string.export_esx, "application/octet-stream"),
+    ESX_SURVEY(R.string.export_esx_survey, "application/octet-stream")
 }
 
 class Exporter(private val ctx: Context, private val store: ProjectStore) {
@@ -44,7 +45,8 @@ class Exporter(private val ctx: Context, private val store: ProjectStore) {
             ExportKind.JSON -> File(dir, "$base.wifisurvey.zip").also { writeBackupZip(p, it) }
             ExportKind.PNG -> File(dir, "$base-heatmaps.zip").also { writePngZip(p, it) }
             ExportKind.PDF -> File(dir, "$base-report.pdf").also { PdfReport(ctx, store).write(p, it) }
-            ExportKind.ESX -> File(dir, "$base.esx").also { EsxExporter(ctx, store).write(p, it) }
+            ExportKind.ESX -> File(dir, "$base.esx").also { EsxExporter(ctx, store).write(p, it, includeSurveys = false) }
+            ExportKind.ESX_SURVEY -> File(dir, "$base-survey.esx").also { EsxExporter(ctx, store).write(p, it, includeSurveys = true) }
         }
     }
 

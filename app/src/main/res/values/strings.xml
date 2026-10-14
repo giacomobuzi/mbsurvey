@@ -61,7 +61,8 @@
     <string name="export_json">Backup progetto (.zip)</string>
     <string name="export_png">Heatmap PNG</string>
     <string name="export_pdf">Report PDF</string>
-    <string name="export_esx">Ekahau .esx</string>
+    <string name="export_esx">Ekahau .esx (planimetrie, scala, AP, radio)</string>
+    <string name="export_esx_survey">Ekahau .esx con survey (sperimentale)</string>
     <string name="settings">Impostazioni</string>
     <string name="edit_project">Dati progetto</string>
     <string name="sync_aps">Aggiorna AP dalle misure</string>
@@ -173,7 +174,7 @@ Il riquadro in basso mostra scansioni fatte e reti viste: deve crescere ogni 2-3
 <p>Menu del progetto → <b>Esporta</b>:<br/>
 • <b>Report PDF</b>: sintesi, heatmap per piano con statistiche, tabelle AP e BSSID.<br/>
 • <b>CSV</b>: una riga per ogni lettura (tempo, posizione in px e metri, BSSID, SSID, dBm, canale), per Excel o altri tool.<br/>
-• <b>Ekahau .esx</b>: progetto apribile in Ekahau AI Pro (File → Open Project) con planimetrie, scala, AP e radio rilevate; le survey sono incluse in formato best-effort.<br/>
+• <b>Ekahau .esx</b>: progetto apribile in Ekahau AI Pro (File → Open Project) con planimetrie, scala, AP posizionati e radio rilevate: la base per proseguire la progettazione sul PC. La variante <b>con survey</b> aggiunge percorsi e letture in un formato non documentato da Ekahau: provala, e se non si apre usa quella standard. Tutte le misure sono comunque dentro l\'archivio (mbsurvey-measurements.json) e nel CSV.<br/>
 • <b>PNG</b>: heatmap come immagini.<br/>
 • <b>Backup .zip</b>: progetto completo, reimportabile su un altro telefono.<br/>
 Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del telefono.</p>
@@ -401,4 +402,16 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="ar_camera_perm">Serve il permesso fotocamera</string>
     <string name="ar_heading_done">Direzione calibrata</string>
     <string name="ar_point_added">Punto registrato</string>
+    <string name="networks">Reti (SSID) e canali</string>
+    <string name="net_summary">%1$d access point · %2$d SSID · %3$d BSSID · %4$d canali in uso</string>
+    <string name="ssid_summary">%1$s · %2$s · %3$d BSSID su %4$d AP · max %5$d dBm</string>
+    <string name="channel_summary">%1$d BSSID · %2$d AP · max %3$d dBm</string>
+    <string name="r_networks">Reti (SSID)</string>
+    <string name="r_channels">Canali per banda</string>
+    <string name="r_col_bands">Bande</string>
+    <string name="r_col_security">Sicurezza</string>
+    <string name="r_col_aps">AP</string>
+    <string name="r_col_channel">Canale</string>
+    <string name="r_net_summary">Rilevati %1$d access point fisici, %2$d SSID e %3$d BSSID su %4$d canali.</string>
+    <string name="wifi_tool_summary">%1$d BSSID · %2$d AP · %3$d SSID</string>
 </resources>

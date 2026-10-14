@@ -44,6 +44,7 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
     fun write(p: Project, file: File) {
         cover(p)
         for (floor in p.floors) floorSection(p, floor)
+        networksSection(p)
         apTable(p)
         notesSection(p)
         radioTable(p)
@@ -181,6 +182,26 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
                 else -> {}
             }
         }
+    }
+
+    private fun networksSection(p: Project) {
+        val ssids = SurveyEngine.ssidSummary(p)
+        if (ssids.isEmpty()) return
+        val channels = SurveyEngine.channelSummary(p)
+        newPage(p)
+        text(p, g(R.string.r_networks), h2)
+        gap(4f)
+        text(p, g(R.string.r_net_summary, SurveyEngine.apCount(p), ssids.size, ssids.sumOf { it.bssids.size }, channels.size))
+        gap(6f)
+        val w1 = listOf(150f, 90f, 80f, 60f, 60f, 75f)
+        tableRow(p, listOf("SSID", g(R.string.r_col_bands), g(R.string.r_col_security), "BSSID", g(R.string.r_col_aps), "Max dBm"), w1, body, true)
+        for (s in ssids) tableRow(p, listOf(s.ssid, s.bands.joinToString("/") { it.label.replace(" GHz", "") }, s.security, s.bssids.size.toString(), s.apCount.toString(), s.maxRssi.toString()), w1, small)
+        gap(16f)
+        text(p, g(R.string.r_channels), h2)
+        gap(6f)
+        val w2 = listOf(90f, 80f, 80f, 80f, 80f, 105f)
+        tableRow(p, listOf(g(R.string.nt_lbl_band), g(R.string.r_col_channel), g(R.string.r_col_width), "BSSID", g(R.string.r_col_aps), "Max dBm"), w2, body, true)
+        for (c in channels) tableRow(p, listOf(c.band.label, c.channel.toString(), "${c.widthMhz} MHz", c.bssids.toString(), c.aps.toString(), c.maxRssi.toString()), w2, small)
     }
 
     private fun apTable(p: Project) {

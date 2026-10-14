@@ -74,6 +74,27 @@
                 style="@style/EmptyText"
                 android:text="@string/surveys_empty" />
 
+            <TextView style="@style/SectionHeader" android:text="@string/networks" />
+            <TextView
+                android:id="@+id/netSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ssidList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/channelList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
             <TextView style="@style/SectionHeader" android:text="@string/access_points" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/apsList"

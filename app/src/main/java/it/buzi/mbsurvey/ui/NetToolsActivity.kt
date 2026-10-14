@@ -327,7 +327,9 @@ class NetToolsActivity : BaseActivity() {
             )
         }
         adapter.replaceAll(list)
-        summary("${entries.size} ${getString(R.string.nt_networks)} · ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(t))}")
+        val aps = SurveyEngine.groupByAp(entries, { it.bssid }, { it.band }).size
+        val ssids = entries.map { it.ssid }.filter { it.isNotBlank() }.toSet().size
+        summary(getString(R.string.wifi_tool_summary, entries.size, aps, ssids) + " · ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(t))}")
     }
 
     private suspend fun channels() {

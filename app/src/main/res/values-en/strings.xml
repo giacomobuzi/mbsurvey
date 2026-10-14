@@ -59,7 +59,8 @@
     <string name="export_json">Project backup (.zip)</string>
     <string name="export_png">Heatmap PNGs</string>
     <string name="export_pdf">PDF report</string>
-    <string name="export_esx">Ekahau .esx</string>
+    <string name="export_esx">Ekahau .esx (floor plans, scale, APs, radios)</string>
+    <string name="export_esx_survey">Ekahau .esx with surveys (experimental)</string>
     <string name="settings">Settings</string>
     <string name="edit_project">Project details</string>
     <string name="sync_aps">Update APs from measurements</string>
@@ -167,7 +168,7 @@ The bottom box shows scans taken and networks seen: it must grow every 2–3 sec
 <p>Project menu → <b>Export</b>:<br/>
 • <b>PDF report</b>: summary, heatmaps per floor with statistics, notes, AP and BSSID tables.<br/>
 • <b>CSV</b>: one row per reading (time, position in px and metres, BSSID, SSID, dBm, channel, latency), for Excel or other tools.<br/>
-• <b>Ekahau .esx</b>: project openable in Ekahau AI Pro (File → Open Project) with floor plans, scale, APs and detected radios; surveys are included on a best-effort basis.<br/>
+• <b>Ekahau .esx</b>: project openable in Ekahau AI Pro (File → Open Project) with floor plans, scale, placed APs and detected radios: the base to continue the design on the PC. The <b>with surveys</b> variant adds paths and readings in a format Ekahau does not document: try it, and fall back to the standard one if it does not open. All measurements are inside the archive anyway (mbsurvey-measurements.json) and in the CSV.<br/>
 • <b>PNG</b>: heatmaps as images.<br/>
 • <b>Backup .zip</b>: full project, importable on another phone.<br/>
 Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
@@ -392,4 +393,16 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="ar_camera_perm">Camera permission required</string>
     <string name="ar_heading_done">Heading calibrated</string>
     <string name="ar_point_added">Point recorded</string>
+    <string name="networks">Networks (SSID) and channels</string>
+    <string name="net_summary">%1$d access points · %2$d SSIDs · %3$d BSSIDs · %4$d channels in use</string>
+    <string name="ssid_summary">%1$s · %2$s · %3$d BSSIDs on %4$d APs · max %5$d dBm</string>
+    <string name="channel_summary">%1$d BSSIDs · %2$d APs · max %3$d dBm</string>
+    <string name="r_networks">Networks (SSID)</string>
+    <string name="r_channels">Channels per band</string>
+    <string name="r_col_bands">Bands</string>
+    <string name="r_col_security">Security</string>
+    <string name="r_col_aps">APs</string>
+    <string name="r_col_channel">Channel</string>
+    <string name="r_net_summary">Detected %1$d physical access points, %2$d SSIDs and %3$d BSSIDs on %4$d channels.</string>
+    <string name="wifi_tool_summary">%1$d BSSIDs · %2$d APs · %3$d SSIDs</string>
 </resources>

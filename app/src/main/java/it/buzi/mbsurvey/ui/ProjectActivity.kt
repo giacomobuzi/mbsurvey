@@ -49,6 +49,8 @@ class ProjectActivity : BaseActivity() {
     private lateinit var floorsAdapter: TwoLineAdapter<Floor>
     private lateinit var surveysAdapter: TwoLineAdapter<Survey>
     private lateinit var apsAdapter: TwoLineAdapter<AccessPoint>
+    private lateinit var ssidAdapter: TwoLineAdapter<SurveyEngine.SsidSummary>
+    private lateinit var channelAdapter: TwoLineAdapter<SurveyEngine.ChannelSummary>
     private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY)
 
     private val exportUi = ExportUi(this)
@@ -94,8 +96,11 @@ class ProjectActivity : BaseActivity() {
             subtitle = { ap ->
                 val floor = project.floor(ap.floorId)?.name
                 val pos = if (ap.x != null && floor != null) floor else getString(R.string.ap_unplaced)
-                val vm = listOf(ap.vendor, ap.model).filter { it.isNotBlank() }.joinToString(" ")
-                listOf(getString(R.string.ap_summary, pos, ap.bssids.size), vm, ap.source.name.lowercase()).filter { it.isNotBlank() }.joinToString(" · ")
+                val vm = listOf(ap.vendor, ap.model).filter { it.isNotBlank() }.joinToString(" ").ifBlank { it.buzi.mbsurvey.net.NetTools.vendor(this, ap.bssids.firstOrNull()) ?: "" }
+                val radios = SurveyEngine.radios(project).filter { it.bssid in ap.bssids }
+                val bands = radios.map { it.band }.toSortedSet().joinToString("/") { it.label.replace(" GHz", "") }
+                val ssids = radios.map { it.ssid }.filter { it.isNotBlank() }.toSet().size
+                listOf(getString(R.string.ap_summary, pos, ap.bssids.size), bands.takeIf { it.isNotBlank() }?.let { "$it GHz" }, if (ssids > 0) "$ssids SSID" else null, vm, ap.source.name.lowercase()).filterNotNull().filter { it.isNotBlank() }.joinToString(" · ")
             },
             onClick = { ap -> editAp(ap) },
             onMore = { ap, v -> apMenu(ap, v) }
@@ -106,6 +111,20 @@ class ProjectActivity : BaseActivity() {
         b.surveysList.adapter = surveysAdapter
         b.apsList.layoutManager = LinearLayoutManager(this)
         b.apsList.adapter = apsAdapter
+        ssidAdapter = TwoLineAdapter(
+            title = { it.ssid },
+            subtitle = { s -> getString(R.string.ssid_summary, s.bands.joinToString(" · ") { it.label }, s.security, s.bssids.size, s.apCount, s.maxRssi) },
+            onClick = { }
+        )
+        channelAdapter = TwoLineAdapter(
+            title = { c -> "${c.band.label} · ${getString(R.string.nt_lbl_channel)} ${c.channel} (${c.widthMhz} MHz)" },
+            subtitle = { c -> getString(R.string.channel_summary, c.bssids, c.aps, c.maxRssi) },
+            onClick = { }
+        )
+        b.ssidList.layoutManager = LinearLayoutManager(this)
+        b.ssidList.adapter = ssidAdapter
+        b.channelList.layoutManager = LinearLayoutManager(this)
+        b.channelList.adapter = channelAdapter
 
         b.addFloor.setOnClickListener { v ->
             val m = PopupMenu(this, v)
@@ -144,6 +163,13 @@ class ProjectActivity : BaseActivity() {
         floorsAdapter.items = project.floors
         surveysAdapter.items = project.surveys.sortedByDescending { it.startedAt }
         apsAdapter.items = project.accessPoints.sortedWith(compareByDescending<AccessPoint> { it.mine }.thenBy { it.name })
+        val ssids = SurveyEngine.ssidSummary(project)
+        val channels = SurveyEngine.channelSummary(project)
+        val apTotal = SurveyEngine.apCount(project)
+        val bssidTotal = ssids.sumOf { it.bssids.size }
+        b.netSummary.text = if (bssidTotal == 0) getString(R.string.aps_empty) else getString(R.string.net_summary, apTotal, ssids.size, bssidTotal, channels.size)
+        ssidAdapter.items = ssids
+        channelAdapter.items = channels
         b.floorsEmpty.visibility = if (project.floors.isEmpty()) View.VISIBLE else View.GONE
         b.surveysEmpty.visibility = if (project.surveys.isEmpty()) View.VISIBLE else View.GONE
         b.apsEmpty.visibility = if (project.accessPoints.isEmpty()) View.VISIBLE else View.GONE

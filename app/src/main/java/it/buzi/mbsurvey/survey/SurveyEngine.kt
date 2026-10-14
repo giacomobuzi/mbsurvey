@@ -133,38 +133,115 @@ object SurveyEngine {
         return map.values.sortedByDescending { it.maxRssi }
     }
 
-    /** Groups BSSIDs that most likely belong to the same physical AP (same OUI + base MAC, different last nibble). */
-    fun groupKey(bssid: String): String {
-        val clean = bssid.lowercase().replace(":", "")
-        if (clean.length != 12) return bssid
-        return clean.substring(0, 11)
+    /**
+     * Groups BSSIDs into physical access points. Vendors derive the BSSIDs of one AP from a base MAC:
+     * the last nibble (or byte) enumerates the SSIDs and the first byte often changes (locally administered
+     * bit, UniFi/Aruba/Cisco), while the second radio typically uses base+1 (or +16). So the key drops the
+     * first byte and the last nibble; adjacent keys are merged when they carry different bands (one radio
+     * per band on the same unit).
+     */
+    fun groupKey(bssid: String): Long {
+        val clean = bssid.lowercase().replace(":", "").replace("-", "")
+        val v = clean.toLongOrNull(16) ?: return bssid.hashCode().toLong()
+        return (v and 0xFFFFFFFFFFL) shr 4   // 40 bits without the first byte, last nibble masked
     }
 
-    /** Creates/updates MEASURED access points in the project from the radios seen so far. */
+    /** Generic grouping of (bssid, band) pairs into AP clusters; returns lists of bssids. */
+    fun <T> groupByAp(items: List<T>, bssidOf: (T) -> String, bandOf: (T) -> Band): List<List<T>> {
+        val byKey = items.groupBy { groupKey(bssidOf(it)) }.toSortedMap()
+        val clusters = ArrayList<MutableList<T>>()
+        var lastKey: Long? = null
+        for ((key, list) in byKey) {
+            val cur = clusters.lastOrNull()
+            if (cur != null && lastKey != null && key - lastKey <= 2) {
+                val bandsCur = cur.map(bandOf).toSet()
+                val bandsNew = list.map(bandOf).toSet()
+                if (bandsCur.intersect(bandsNew).isEmpty()) { cur.addAll(list); lastKey = key; continue }
+            }
+            clusters.add(list.toMutableList()); lastKey = key
+        }
+        return clusters
+    }
+
+    /** Summary of one SSID across the project: bands, number of BSSIDs and APs, security. */
+    class SsidSummary(val ssid: String) {
+        val bands = sortedSetOf<Band>()
+        val bssids = HashSet<String>()
+        var apCount = 0
+        var security = ""
+        var maxRssi = -127
+    }
+
+    fun ssidSummary(p: Project): List<SsidSummary> {
+        val radios = radios(p)
+        val apOf = HashMap<String, Int>()
+        groupByAp(radios, { it.bssid }, { it.band }).forEachIndexed { i, g -> g.forEach { apOf[it.bssid] = i } }
+        val map = LinkedHashMap<String, SsidSummary>()
+        for (r in radios) {
+            val key = r.ssid.ifBlank { "<hidden>" }
+            val s = map.getOrPut(key) { SsidSummary(key) }
+            s.bands.add(r.band); s.bssids.add(r.bssid); s.security = r.security
+            if (r.maxRssi > s.maxRssi) s.maxRssi = r.maxRssi
+        }
+        for (s in map.values) s.apCount = s.bssids.mapNotNull { apOf[it] }.toSet().size
+        return map.values.sortedByDescending { it.maxRssi }
+    }
+
+    /** Channel usage per band: (band, channel, width) -> number of BSSIDs, number of APs, max RSSI. */
+    class ChannelSummary(val band: Band, val channel: Int, val widthMhz: Int) {
+        var bssids = 0; var aps = 0; var maxRssi = -127
+    }
+
+    fun channelSummary(p: Project): List<ChannelSummary> {
+        val radios = radios(p)
+        val apOf = HashMap<String, Int>()
+        groupByAp(radios, { it.bssid }, { it.band }).forEachIndexed { i, g -> g.forEach { apOf[it.bssid] = i } }
+        val map = LinkedHashMap<String, Pair<ChannelSummary, HashSet<Int>>>()
+        for (r in radios) {
+            val k = "${r.band}-${r.channel}-${r.widthMhz}"
+            val (c, aps) = map.getOrPut(k) { Pair(ChannelSummary(r.band, r.channel, r.widthMhz), HashSet()) }
+            c.bssids++; apOf[r.bssid]?.let { aps.add(it) }; if (r.maxRssi > c.maxRssi) c.maxRssi = r.maxRssi
+        }
+        return map.values.map { (c, aps) -> c.aps = aps.size; c }.sortedWith(compareBy({ it.band.ordinal }, { it.channel }))
+    }
+
+    /** Number of physical APs seen in the project. */
+    fun apCount(p: Project): Int = groupByAp(radios(p), { it.bssid }, { it.band }).size
+
+    /**
+     * Rebuilds the MEASURED access points from the radios seen so far, one per physical AP. Planned/manual
+     * APs keep their BSSIDs; names, vendor, flags and positions of previous measured APs are carried over.
+     */
     fun syncMeasuredAps(p: Project) {
         val radios = radios(p)
-        val byGroup = radios.groupBy { groupKey(it.bssid) }
-        for ((_, list) in byGroup) {
-            val existing = p.accessPoints.firstOrNull { ap -> ap.bssids.any { b -> list.any { it.bssid == b } } }
+        val oldMeasured = p.accessPoints.filter { it.source == ApSource.MEASURED }
+        p.accessPoints.removeAll { it.source == ApSource.MEASURED }
+        val clusters = groupByAp(radios, { it.bssid }, { it.band })
+        var n = p.accessPoints.size
+        for (list in clusters) {
+            val bssids = list.map { it.bssid }
+            val existing = p.accessPoints.firstOrNull { ap -> ap.bssids.any { it in bssids } }
             val best = list.maxByOrNull { it.maxRssi } ?: continue
             if (existing != null) {
-                list.forEach { if (it.bssid !in existing.bssids) existing.bssids.add(it.bssid) }
-                if (existing.source == ApSource.MEASURED && existing.x == null && best.estX != null) {
-                    existing.x = best.estX; existing.y = best.estY; existing.floorId = best.estFloorId
-                }
-            } else {
-                val ssid = list.map { it.ssid }.firstOrNull { it.isNotBlank() } ?: ""
-                val ap = AccessPoint(
-                    name = if (ssid.isNotBlank()) "$ssid-${best.bssid.takeLast(5)}" else "AP-${best.bssid.takeLast(5)}",
-                    floorId = best.estFloorId,
-                    x = best.estX,
-                    y = best.estY,
-                    mine = false,
-                    source = ApSource.MEASURED
-                )
-                list.forEach { ap.bssids.add(it.bssid) }
-                p.accessPoints.add(ap)
+                bssids.forEach { if (it !in existing.bssids) existing.bssids.add(it) }
+                continue
             }
+            val prev = oldMeasured.maxByOrNull { old -> old.bssids.count { it in bssids } }?.takeIf { old -> old.bssids.any { it in bssids } }
+            n++
+            val ssid = list.map { it.ssid }.filter { it.isNotBlank() }.groupingBy { it }.eachCount().maxByOrNull { it.value }?.key ?: ""
+            val ap = AccessPoint(
+                name = prev?.name ?: (if (ssid.isNotBlank()) "$ssid AP$n" else "AP$n"),
+                vendor = prev?.vendor ?: "",
+                model = prev?.model ?: "",
+                floorId = prev?.floorId ?: best.estFloorId,
+                x = prev?.x ?: best.estX,
+                y = prev?.y ?: best.estY,
+                mine = prev?.mine ?: false,
+                source = ApSource.MEASURED,
+                notes = prev?.notes ?: ""
+            )
+            bssids.forEach { ap.bssids.add(it) }
+            p.accessPoints.add(ap)
         }
     }
 

@@ -34,7 +34,7 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
 
     private fun created(o: JSONObject): JSONObject = o.put("status", "CREATED")
 
-    fun write(p: Project, file: File) {
+    fun write(p: Project, file: File, includeSurveys: Boolean = false) {
         val projectId = newId()
         ZipOutputStream(FileOutputStream(file).buffered()).use { zip ->
             fun put(name: String, content: String) {
@@ -53,6 +53,16 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
                     .put("createdAt", iso.format(Date(p.createdAt))).put("createdBy", p.surveyor.ifBlank { "MB Survey" }))
                 .put("projectConfigurationId", configurationId)
                 .put("tags", JSONArray()).put("id", projectId)
+            p.floors.firstOrNull()?.let { f ->
+                store.loadFloorBitmap(p, f, 192)?.let { bmp ->
+                    val bos = java.io.ByteArrayOutputStream()
+                    bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bos)
+                    project.put("thumbnail", JSONObject()
+                        .put("dataFloorPlanId", f.id)
+                        .put("mimeType", "image/png")
+                        .put("data", android.util.Base64.encodeToString(bos.toByteArray(), android.util.Base64.NO_WRAP)))
+                }
+            }
             put("project.json", JSONObject().put("project", created(project)).toString())
 
             // ---- reference files from the Ekahau template ----
@@ -97,8 +107,8 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
             // Make sure every measured BSSID belongs to an AP (unassigned ones become MEASURED APs).
             val apList = p.accessPoints.map { it }.toMutableList()
             val assigned = apList.flatMap { it.bssids }.toSet()
-            val orphan = radios.filter { it.bssid !in assigned }.groupBy { SurveyEngine.groupKey(it.bssid) }
-            for ((_, list) in orphan) {
+            val orphan = SurveyEngine.groupByAp(radios.filter { it.bssid !in assigned }, { it.bssid }, { it.band })
+            for (list in orphan) {
                 val best = list.maxByOrNull { it.maxRssi } ?: continue
                 val ap = it.buzi.mbsurvey.model.AccessPoint(
                     name = (best.ssid.ifBlank { "AP" }) + "-" + best.bssid.takeLast(5),
@@ -124,27 +134,23 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
                     val measurementId = newId()
                     val radioId = newId()
                     radioIdByBssid[bssid] = radioId
-                    val centre = if (r.widthMhz > 20) r.freqMhz else r.freqMhz
-                    measurements.put(created(JSONObject()
-                        .put("mac", bssid).put("ssid", r.ssid)
-                        .put("technologies", JSONArray().put(technology(r.band)))
-                        .put("channelByCenterFrequencyDefinedNarrowChannels", JSONArray().put(centre))
-                        .put("channelWidth", r.widthMhz)
-                        .put("security", r.security)
-                        .put("id", measurementId)))
-                    measuredRadios.put(created(JSONObject()
-                        .put("accessPointId", ap.id)
-                        .put("accessPointMeasurementIds", JSONArray().put(measurementId))
-                        .put("frequencyBand", bandKey(r.band))
-                        .put("technologies", JSONArray().put(technology(r.band)))
-                        .put("id", radioId)))
+                    val centre = r.freqMhz
+                    val m = JSONObject().put("mac", bssid).put("ssid", r.ssid).put("technologies", JSONArray().put(technology(r.band)))
+                    if (includeSurveys) {
+                        m.put("channelByCenterFrequencyDefinedNarrowChannels", JSONArray().put(centre)).put("channelWidth", r.widthMhz).put("security", r.security)
+                    }
+                    measurements.put(created(m.put("id", measurementId)))
+                    val mr = JSONObject().put("accessPointId", ap.id).put("accessPointMeasurementIds", JSONArray().put(measurementId))
+                    if (includeSurveys) mr.put("frequencyBand", bandKey(r.band)).put("technologies", JSONArray().put(technology(r.band)))
+                    measuredRadios.put(created(mr.put("id", radioId)))
                 }
             }
             put("accessPoints.json", JSONObject().put("accessPoints", aps).toString())
             put("measuredRadios.json", JSONObject().put("measuredRadios", measuredRadios).toString())
             put("accessPointMeasurements.json", JSONObject().put("accessPointMeasurements", measurements).toString())
 
-            // ---- surveys (best-effort Ekahau layout) ----
+            // ---- surveys (best-effort Ekahau layout, experimental) ----
+            if (includeSurveys) {
             val surveys = JSONArray()
             for (s in p.surveys) {
                 if (p.floor(s.floorId) == null) continue
@@ -181,6 +187,7 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
                     .put("id", s.id)))
             }
             put("surveys.json", JSONObject().put("surveys", surveys).toString())
+            }
 
             put("projectHistorys.json", JSONObject().put("projectHistorys", JSONArray().put(created(JSONObject()
                 .put("parentIds", JSONArray())
@@ -194,8 +201,8 @@ class EsxExporter(private val ctx: Context, private val store: ProjectStore) {
                 .put("platform", "Android")
                 .put("id", newId())))).toString())
 
-            // ---- vendor-neutral full copy ----
-            put("wifisurvey-measurements.json", store.exportJson(p).toString())
+            // ---- vendor-neutral full copy (ignored by Ekahau, readable by anything else) ----
+            put("mbsurvey-measurements.json", store.exportJson(p).toString())
         }
     }
 
