@@ -172,8 +172,8 @@ object SurveyEngine {
         var maxRssi = -127
     }
 
-    fun ssidSummary(p: Project): List<SsidSummary> {
-        val radios = radios(p)
+    fun ssidSummary(p: Project, floorId: String? = null): List<SsidSummary> {
+        val radios = radios(p, floorId)
         val apOf = HashMap<String, Int>()
         groupByAp(radios, { it.bssid }, { it.band }).forEachIndexed { i, g -> g.forEach { apOf[it.bssid] = i } }
         val map = LinkedHashMap<String, SsidSummary>()
@@ -192,8 +192,8 @@ object SurveyEngine {
         var bssids = 0; var aps = 0; var maxRssi = -127
     }
 
-    fun channelSummary(p: Project): List<ChannelSummary> {
-        val radios = radios(p)
+    fun channelSummary(p: Project, floorId: String? = null): List<ChannelSummary> {
+        val radios = radios(p, floorId)
         val apOf = HashMap<String, Int>()
         groupByAp(radios, { it.bssid }, { it.band }).forEachIndexed { i, g -> g.forEach { apOf[it.bssid] = i } }
         val map = LinkedHashMap<String, Pair<ChannelSummary, HashSet<Int>>>()
@@ -206,7 +206,7 @@ object SurveyEngine {
     }
 
     /** Number of physical APs seen in the project. */
-    fun apCount(p: Project): Int = groupByAp(radios(p), { it.bssid }, { it.band }).size
+    fun apCount(p: Project, floorId: String? = null): Int = groupByAp(radios(p, floorId), { it.bssid }, { it.band }).size
 
     /**
      * Rebuilds the MEASURED access points from the radios seen so far, one per physical AP. Planned/manual

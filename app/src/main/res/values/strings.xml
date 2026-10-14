@@ -414,4 +414,13 @@ Ogni file si può condividere (mail, Drive, Teams) o salvare nella memoria del t
     <string name="r_col_channel">Canale</string>
     <string name="r_net_summary">Rilevati %1$d access point fisici, %2$d SSID e %3$d BSSID su %4$d canali.</string>
     <string name="wifi_tool_summary">%1$d BSSID · %2$d AP · %3$d SSID</string>
+    <string name="delete_aps">Elimina AP…</string>
+    <string name="delete_aps_measured">Elimina AP misurati</string>
+    <string name="delete_aps_floor">Elimina AP del piano selezionato</string>
+    <string name="delete_aps_all">Elimina tutti gli AP</string>
+    <string name="delete_aps_measured_confirm">Eliminare tutti gli AP creati dalle misure? Quelli pianificati o inseriti a mano restano.</string>
+    <string name="delete_aps_floor_confirm">Eliminare tutti gli AP del piano selezionato?</string>
+    <string name="delete_aps_all_confirm">Eliminare tutti gli access point del progetto?</string>
+    <string name="all_floors">Tutti i piani</string>
+    <string name="r_floor_networks">Reti e canali · %1$s</string>
 </resources>

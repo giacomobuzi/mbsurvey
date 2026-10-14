@@ -405,4 +405,13 @@ Every file can be shared (mail, Drive, Teams) or saved on the phone.</p>
     <string name="r_col_channel">Channel</string>
     <string name="r_net_summary">Detected %1$d physical access points, %2$d SSIDs and %3$d BSSIDs on %4$d channels.</string>
     <string name="wifi_tool_summary">%1$d BSSIDs · %2$d APs · %3$d SSIDs</string>
+    <string name="delete_aps">Delete APs…</string>
+    <string name="delete_aps_measured">Delete measured APs</string>
+    <string name="delete_aps_floor">Delete APs of selected floor</string>
+    <string name="delete_aps_all">Delete all APs</string>
+    <string name="delete_aps_measured_confirm">Delete all APs created from measurements? Planned and manual ones are kept.</string>
+    <string name="delete_aps_floor_confirm">Delete all APs of the selected floor?</string>
+    <string name="delete_aps_all_confirm">Delete every access point in the project?</string>
+    <string name="all_floors">All floors</string>
+    <string name="r_floor_networks">Networks and channels · %1$s</string>
 </resources>

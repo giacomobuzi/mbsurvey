@@ -25,6 +25,7 @@ import it.buzi.mbsurvey.databinding.ActivityProjectBinding
 import it.buzi.mbsurvey.databinding.DialogApBinding
 import it.buzi.mbsurvey.databinding.DialogProjectBinding
 import it.buzi.mbsurvey.model.AccessPoint
+import it.buzi.mbsurvey.model.ApSource
 import it.buzi.mbsurvey.model.Floor
 import it.buzi.mbsurvey.model.PlanDrawing
 import it.buzi.mbsurvey.plan.PlanRenderer
@@ -51,6 +52,7 @@ class ProjectActivity : BaseActivity() {
     private lateinit var apsAdapter: TwoLineAdapter<AccessPoint>
     private lateinit var ssidAdapter: TwoLineAdapter<SurveyEngine.SsidSummary>
     private lateinit var channelAdapter: TwoLineAdapter<SurveyEngine.ChannelSummary>
+    private var floorFilterId: String? = null
     private val dateFmt = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ITALY)
 
     private val exportUi = ExportUi(this)
@@ -146,6 +148,29 @@ class ProjectActivity : BaseActivity() {
             store.save(project)
             refresh()
         }
+        b.deleteAps.setOnClickListener { v ->
+            val m = PopupMenu(this, v)
+            m.menu.add(0, 1, 0, R.string.delete_aps_measured)
+            m.menu.add(0, 2, 1, R.string.delete_aps_floor)
+            m.menu.add(0, 3, 2, R.string.delete_aps_all)
+            m.setOnMenuItemClickListener {
+                val (msg, pred) = when (it.itemId) {
+                    1 -> Pair(getString(R.string.delete_aps_measured_confirm), { ap: AccessPoint -> ap.source == ApSource.MEASURED })
+                    2 -> Pair(getString(R.string.delete_aps_floor_confirm), { ap: AccessPoint -> floorFilterId == null || ap.floorId == floorFilterId })
+                    else -> Pair(getString(R.string.delete_aps_all_confirm), { _: AccessPoint -> true })
+                }
+                Dialogs.confirm(this, msg) { project.accessPoints.removeAll(pred); store.save(project); refresh() }
+                true
+            }
+            m.show()
+        }
+        b.floorFilter.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val newId = if (position == 0) null else project.floors.getOrNull(position - 1)?.id
+                if (newId != floorFilterId) { floorFilterId = newId; refreshNetworks() }
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
         b.throttleWarn.setOnClickListener { Dialogs.throttleHelp(this) }
         b.wizardBtn.setOnClickListener { startActivity(Intent(this, WizardActivity::class.java).putExtra(EXTRA_ID, project.id)) }
     }
@@ -162,17 +187,27 @@ class ProjectActivity : BaseActivity() {
         supportActionBar?.subtitle = listOf(project.customer, project.location).filter { it.isNotBlank() }.joinToString(" · ")
         floorsAdapter.items = project.floors
         surveysAdapter.items = project.surveys.sortedByDescending { it.startedAt }
-        apsAdapter.items = project.accessPoints.sortedWith(compareByDescending<AccessPoint> { it.mine }.thenBy { it.name })
-        val ssids = SurveyEngine.ssidSummary(project)
-        val channels = SurveyEngine.channelSummary(project)
-        val apTotal = SurveyEngine.apCount(project)
+        val labels = listOf(getString(R.string.all_floors)) + project.floors.map { it.name }
+        val sel = if (floorFilterId == null) 0 else project.floors.indexOfFirst { it.id == floorFilterId } + 1
+        b.floorFilter.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
+        if (sel in labels.indices) b.floorFilter.setSelection(sel, false)
+        refreshNetworks()
+        b.floorsEmpty.visibility = if (project.floors.isEmpty()) View.VISIBLE else View.GONE
+        b.surveysEmpty.visibility = if (project.surveys.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun refreshNetworks() {
+        val fid = floorFilterId
+        val aps = project.accessPoints.filter { fid == null || it.floorId == fid }
+        apsAdapter.items = aps.sortedWith(compareByDescending<AccessPoint> { it.mine }.thenBy { it.name })
+        b.apsEmpty.visibility = if (aps.isEmpty()) View.VISIBLE else View.GONE
+        val ssids = SurveyEngine.ssidSummary(project, fid)
+        val channels = SurveyEngine.channelSummary(project, fid)
+        val apTotal = SurveyEngine.apCount(project, fid)
         val bssidTotal = ssids.sumOf { it.bssids.size }
         b.netSummary.text = if (bssidTotal == 0) getString(R.string.aps_empty) else getString(R.string.net_summary, apTotal, ssids.size, bssidTotal, channels.size)
         ssidAdapter.items = ssids
         channelAdapter.items = channels
-        b.floorsEmpty.visibility = if (project.floors.isEmpty()) View.VISIBLE else View.GONE
-        b.surveysEmpty.visibility = if (project.surveys.isEmpty()) View.VISIBLE else View.GONE
-        b.apsEmpty.visibility = if (project.accessPoints.isEmpty()) View.VISIBLE else View.GONE
     }
 
     // ---------------- floors ----------------

@@ -185,13 +185,23 @@ class PdfReport(private val ctx: Context, private val store: ProjectStore) {
     }
 
     private fun networksSection(p: Project) {
-        val ssids = SurveyEngine.ssidSummary(p)
-        if (ssids.isEmpty()) return
-        val channels = SurveyEngine.channelSummary(p)
+        if (SurveyEngine.ssidSummary(p).isEmpty()) return
         newPage(p)
-        text(p, g(R.string.r_networks), h2)
+        networkTables(p, null, g(R.string.r_networks))
+        if (p.floors.size > 1) for (f in p.floors) {
+            if (SurveyEngine.ssidSummary(p, f.id).isEmpty()) continue
+            gap(18f)
+            networkTables(p, f.id, g(R.string.r_floor_networks, f.name))
+        }
+    }
+
+    private fun networkTables(p: Project, floorId: String?, title: String) {
+        val ssids = SurveyEngine.ssidSummary(p, floorId)
+        val channels = SurveyEngine.channelSummary(p, floorId)
+        ensure(p, 60f)
+        text(p, title, h2)
         gap(4f)
-        text(p, g(R.string.r_net_summary, SurveyEngine.apCount(p), ssids.size, ssids.sumOf { it.bssids.size }, channels.size))
+        text(p, g(R.string.r_net_summary, SurveyEngine.apCount(p, floorId), ssids.size, ssids.sumOf { it.bssids.size }, channels.size))
         gap(6f)
         val w1 = listOf(150f, 90f, 80f, 60f, 60f, 75f)
         tableRow(p, listOf("SSID", g(R.string.r_col_bands), g(R.string.r_col_security), "BSSID", g(R.string.r_col_aps), "Max dBm"), w1, body, true)
